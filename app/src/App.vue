@@ -1,22 +1,32 @@
 <template>
-  <h1 class="btn btn-primary">Hello</h1>
+  <h1>hello</h1>
   <ul>
-    <li v-for="user in users" :key="user.id">{{ Username.name }}</li>
+    <li v-for="user in users" :key="user.Username">{{ user.Username }}</li>
   </ul>
 </template>
 
-<script setup>
+<script lang="ts">
 import { ref, onMounted } from 'vue'
 import { supabase } from './lib/supabaseClient'
 
-const users = ref([])
+interface User {
+  Username: string
+}
+const users = ref<User[]>([])
 
 async function getUsers() {
-  const { data } = await supabase.from('Users').select()
-  users.value = data
+  const { data, error } = await supabase.from('Users').select('Username')
+  users.value = data || []
 }
 
-onMounted(() => {
-  getUsers()
-})
+export default {
+  setup() {
+    onMounted(() => {
+      getUsers()
+    })
+    return {
+      users
+    }
+  }
+}
 </script>
