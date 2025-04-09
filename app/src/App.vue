@@ -1,8 +1,10 @@
 <template>
-  <h1>hello</h1>
-  <ul>
-    <li v-for="user in users" :key="user.Username">{{ user.Username }}</li>
-  </ul>
+  <div>
+    <h1>hello</h1>
+    <ul>
+      <li v-for="user in users" :key="user.Username">{{ user.Username }}</li>
+    </ul>
+  </div>
 </template>
 
 <script lang="ts">
@@ -11,11 +13,13 @@ import { supabase } from './lib/supabaseClient'
 
 interface User {
   Username: string
+  Friends: string[]
 }
 const users = ref<User[]>([])
 
 async function getUsers() {
-  const { data, error } = await supabase.from('Users').select('Username')
+  const { data } = await supabase.from('Users').select('Username, Friends')
+  console.log(data)
   users.value = data || []
 }
 
@@ -25,8 +29,8 @@ export default {
       getUsers()
     })
     return {
-      users
+      users,
     }
-  }
+  },
 }
 </script>
