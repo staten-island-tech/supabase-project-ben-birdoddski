@@ -1,9 +1,8 @@
 <template>
   <div>
-    <h1>hello</h1>
-    <ul>
-      <li v-for="user in users" :key="user.Username">{{ user.Username }}</li>
-    </ul>
+    <h2>Username: </h2> <input type="text" placeholder="Type here" class="input" />
+    <h3>Password: </h3> <input type="text" placeholder="Type here" class="input" />
+    <button class="btn">Login</button>
   </div>
 </template>
 
