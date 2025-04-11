@@ -1,8 +1,9 @@
 <template>
   <div>
-    <h2>Username: </h2> <input type="text" placeholder="Type here" class="input" />
-    <h3>Password: </h3> <input type="text" placeholder="Type here" class="input" />
-    <button class="btn">Login</button>
+    <h1>Email: </h1> <input type="text" placeholder="Type here" class="input" id="email"/>
+    <h2>Username: </h2> <input type="text" placeholder="Type here" class="input" id="username"/>
+    <h3>Password: </h3> <input type="text" placeholder="Type here" class="input" id="password"/>
+    <button class="btn" onclick="signInWithPassword()">Login</button>
   </div>
 </template>
 
@@ -16,17 +17,16 @@ interface User {
 }
 const users = ref<User[]>([])
 
-async function getUsers() {
-  const { data } = await supabase.from('Users').select('Username, Friends')
-  console.log(data)
-  users.value = data || []
+async function signInWithEmail() {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: 'valid.email@supabase.io',
+    password: 'example-password',
+  })
+  return(data)
 }
 
 export default {
   setup() {
-    onMounted(() => {
-      getUsers()
-    })
     return {
       users,
     }
