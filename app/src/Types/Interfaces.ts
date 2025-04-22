@@ -1,4 +1,5 @@
-export interface User {
-    Username: string
-    Friends: string[]
-  }
+export default interface User {
+    username: string
+    password: string
+    loggedin: boolean
+}

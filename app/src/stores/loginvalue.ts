@@ -1,18 +1,20 @@
 import { defineStore } from 'pinia'
-interface LoginUser {
+import { ref } from 'vue'
+import User from '../Types/Interfaces.ts'
+interface User {
   username: string
   password: string
   loggedin: boolean
 }
-let loggedin=false
 export const useLoginStore = defineStore('user', {
-  state: (): LoginUser => {
-    let currentuser="hello"
-    let currentpass="byebye"
+  state: (): User => {
+    const email = ref<string>('') //move
+    const password = ref<string>('') //move
+    const loggedin=ref<boolean>(false)
     return {
-      username: currentuser,
-      password: currentpass,
-      loggedin: loggedin,
+      username: email.value,
+      password: password.value,
+      loggedin: loggedin.value
     }
   },
 })

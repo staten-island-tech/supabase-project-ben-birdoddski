@@ -18,14 +18,15 @@
 <script lang="ts">
 import { ref } from 'vue'
 import { supabase } from './lib/supabaseClient'
-
+import {useLoginStore}from '@/stores/loginvalue.ts'
+import { storeToRefs } from 'pinia'
+const user = useLoginStore()
 export default {
   setup() {
-    //remember refs and things in template need setup
-    const emailLogIn = ref<string>('')
-    const passwordLogIn = ref<string>('')
-    const emailSignUp = ref<string>('')
-    const passwordSignUp = ref<string>('')
+    const emailLogIn = ref<string>('') //move
+    const passwordLogIn = ref<string>('') //move
+    const emailSignUp = ref<string>('') //move
+    const passwordSignUp = ref<string>('') //move
     async function signUpWithUser() {
       const { data, error } = await supabase.auth.signUp({
         email: emailSignUp.value,
