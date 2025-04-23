@@ -18,7 +18,7 @@
 <script lang="ts">
 import { ref } from 'vue'
 import { supabase } from './lib/supabaseClient'
-import {useLoginStore}from '@/stores/loginvalue.ts'
+import { useLoginStore } from '@/stores/loginvalue'
 import { storeToRefs } from 'pinia'
 const user = useLoginStore()
 export default {
