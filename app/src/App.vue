@@ -8,23 +8,21 @@
     <button class="btn" @click="signUpWithUser()">Sign up</button>
     <h1>Log In:</h1>
     <h2>Email:</h2>
-    <input v-model="emailLogIn" type="text" placeholder="Username" class="input" />
+    <input v-model="userStore.username" type="text" placeholder="Username" class="input" />
     <h2>Password:</h2>
-    <input v-model="passwordLogIn" type="password" placeholder="Password" class="input" />
+    <input v-model="userStore.password" type="password" placeholder="Password" class="input" />
     <button class="btn" @click="signInWithUser()">Login</button>
+    <h1 v-if="userStore.loggedIn">We're in!!!!!</h1>
   </div>
 </template>
 
 <script lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { supabase } from './lib/supabaseClient'
 import { useLoginStore } from '@/stores/loginvalue'
-import { storeToRefs } from 'pinia'
-const user = useLoginStore()
 export default {
   setup() {
-    const emailLogIn = ref<string>('') //move
-    const passwordLogIn = ref<string>('') //move
+    const userStore = useLoginStore()
     const emailSignUp = ref<string>('') //move
     const passwordSignUp = ref<string>('') //move
     async function signUpWithUser() {
@@ -40,18 +38,17 @@ export default {
     }
     async function signInWithUser() {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: emailLogIn.value,
-        password: passwordLogIn.value,
+        email: userStore.username,
+        password: userStore.password,
       })
       if (error) {
         console.log(error)
       } else {
-        console.log(data)
+        userStore.loggedIn=true
       }
     }
     return {
-      emailLogIn,
-      passwordLogIn,
+      userStore,
       emailSignUp,
       passwordSignUp,
       signUpWithUser,
