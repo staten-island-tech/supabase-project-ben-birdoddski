@@ -14,7 +14,7 @@
 <script lang="ts">
 import { ref } from 'vue'
 import { supabase } from '../lib/supabaseClient'
-import { useLoginStore } from '@/stores/loginvalue'
+import { useLoginStore } from '../stores/loginvalue'
 export default {
   setup() {
     const showError = ref<string>('')

@@ -9,11 +9,11 @@
     <h1 v-if="showError">{showError.value}</h1>
   </div>
 </template>
-  
+
 <script lang="ts">
 import { ref } from 'vue'
 import { supabase } from '../lib/supabaseClient'
-import { useLoginStore } from '@/stores/loginvalue'
+import { useLoginStore } from '../stores/loginvalue'
 export default {
   setup() {
     const userStore = useLoginStore()
@@ -37,4 +37,3 @@ export default {
   },
 }
 </script>
-  

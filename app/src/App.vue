@@ -1,10 +1,5 @@
 <template>
-  <div>
-    <RouterLink class="link link-primary" to="/signup">Go to Sign Up</RouterLink>
-    <br>
-    <RouterLink class="link link-primary" to="/login">Go to Login</RouterLink>
+  <div id="app">
+    <router-view></router-view>
   </div>
 </template>
-<script lang="ts">
-import { RouterLink } from 'vue-router';
-</script>
