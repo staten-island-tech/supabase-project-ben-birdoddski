@@ -8,6 +8,6 @@
 
 <script lang="ts">
 export default {
-  name: 'MainPage', // Naming the component
+  name: 'MainPage',
 }
 </script>

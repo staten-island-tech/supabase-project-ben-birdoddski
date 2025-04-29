@@ -25,7 +25,7 @@ export default {
         password: userStore.password,
       })
       if (error) {
-        console.log(error)
+        console.error('Error signing up:', error.message)
       } else {
         userStore.loggedIn=true
       }

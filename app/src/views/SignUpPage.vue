@@ -2,6 +2,8 @@
   <div>
     <h1>Sign Up:</h1>
     <h2>Email:</h2>
+    <input v-model="userStore.email" type="text" placeholder="Email" class="input" />
+    <h2>Username:</h2>
     <input v-model="userStore.username" type="text" placeholder="Username" class="input" />
     <h2>Password:</h2>
     <input v-model="userStore.password" type="password" placeholder="Password" class="input" />
@@ -20,7 +22,7 @@ export default {
     const showError = ref<string>()
     async function signUpWithUser() {
       const { data, error } = await supabase.auth.signUp({
-        email: userStore.username,
+        email: userStore.email,
         password: userStore.password,
       })
       if (error) {
