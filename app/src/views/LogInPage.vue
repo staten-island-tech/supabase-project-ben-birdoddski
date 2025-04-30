@@ -14,11 +14,11 @@
 <script lang="ts">
 import { ref } from 'vue'
 import { supabase } from '../lib/supabaseClient'
-import { useLoginStore } from '../stores/loginvalue'
+import { useUserStore } from '../stores/uservalue'
 export default {
   setup() {
     const showError = ref<string>('')
-    const userStore = useLoginStore()
+    const userStore = useUserStore()
     async function signInWithUser() {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: userStore.username,
@@ -27,7 +27,7 @@ export default {
       if (error) {
         console.error('Error signing up:', error.message)
       } else {
-        userStore.loggedIn=true
+        userStore.loggedIn = true
       }
     }
     return {

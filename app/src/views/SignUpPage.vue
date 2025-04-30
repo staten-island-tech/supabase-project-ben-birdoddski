@@ -15,10 +15,11 @@
 <script lang="ts">
 import { ref } from 'vue'
 import { supabase } from '../lib/supabaseClient'
-import { useLoginStore } from '../stores/loginvalue'
+import { useUserStore } from '../stores/uservalue'
+import type DatabaseUser from '../Types/Interfaces'
 export default {
   setup() {
-    const userStore = useLoginStore()
+    const userStore = useUserStore()
     const showError = ref<string>()
     async function signUpWithUser() {
       const { data, error } = await supabase.auth.signUp({
@@ -28,7 +29,21 @@ export default {
       if (error) {
         console.log(error)
       } else {
-        console.log(data)
+        const user = data?.user
+        if (user) {
+          //ts is so bummy this took 10 minutes to figure out
+          const { error } = await supabase.from('users').insert({
+            id: user.id,
+            email: user.email,
+            username: userStore.username,
+            friends: [],
+          })
+          if (error) {
+            console.log(error)
+          } else {
+            console.log('successfully inserted user into table')
+          }
+        }
       }
     }
     return {

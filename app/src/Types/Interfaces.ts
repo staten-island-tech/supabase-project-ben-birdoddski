@@ -1,5 +1,6 @@
-export default interface User {
+export default interface DatabaseUser {
+    id: string
+    email: string
     username: string
-    password: string
-    loggedIn: boolean
+    friends: string[]|null
 }
