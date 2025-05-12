@@ -1,17 +1,44 @@
 <template>
-  <div>
-    <h1>Log In:</h1>
-    <h2>Email:</h2>
-    <input v-model="userStore.username" type="text" placeholder="Username" class="input" />
-    <h2>Password:</h2>
-    <input v-model="userStore.password" type="password" placeholder="Password" class="input" />
-    <button class="btn" @click="signInWithUser()">Login</button>
-    <h1 v-if="showError">{showError.value}</h1>
-    <h1 v-if="userStore.loggedIn">We're in!!!!!</h1>
+  <div class="min-h-screen flex items-center justify-center bg-base-200">
+    <div class="w-full max-w-md p-8 space-y-6 bg-base-100 shadow-lg rounded-box">
+      <h1 class="text-3xl font-bold text-center">Log In (i luv chatgpt styling)</h1>
+
+      <div class="form-control text-center">
+        <label class="">
+          <span class="font-bold">Username</span>
+        </label>
+        <input v-model="userStore.username" type="text" placeholder="Username" class="input input-bordered" />
+      </div>
+
+      <div class="form-control text-center">
+        <label class="">
+          <span class="font-bold">Password</span>
+        </label>
+        <input v-model="userStore.password" type="password" placeholder="Password" class="input input-bordered" />
+      </div>
+
+      <div class="text-center">
+        <button class="btn btn-primary w-[70%]" @click="signInWithUser()">Login</button>
+      </div>
+
+      <div v-if="showError" class="text-error text-center font-semibold">
+        {{ showError }}
+      </div>
+
+      <div v-if="userStore.loggedIn" class="text-red-400 text-center font-semibold">
+        Reroute to main page
+      </div>
+
+      <div class="text-center">
+        <RouterLink to="/signup" class="link link-primary">Don't have an account? Sign up here!</RouterLink>
+      </div>
+    </div>
   </div>
 </template>
 
+
 <script lang="ts">
+//reroute to 
 import { ref } from 'vue'
 import { supabase } from '../lib/supabaseClient'
 import { useUserStore } from '../stores/uservalue'
