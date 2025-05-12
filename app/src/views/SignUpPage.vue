@@ -8,7 +8,7 @@
     <h2>Password:</h2>
     <input v-model="userStore.password" type="password" placeholder="Password" class="input" />
     <button class="btn" @click="signUpWithUser()">Sign up!</button>
-    <h1 v-if="showError">{showError.value}</h1>
+    <h1 v-if="showError">{{ showError }}</h1>
   </div>
 </template>
 
@@ -27,22 +27,19 @@ export default {
         password: userStore.password,
       })
       if (error) {
-        console.log(error)
-      } else {
-        const user = data?.user
-        if (user) {
-          //ts is so bummy this took 10 minutes to figure out
-          const { error } = await supabase.from('users').insert({
-            id: user.id,
-            email: user.email,
-            username: userStore.username,
-            friends: [],
-          })
-          if (error) {
-            console.log(error)
-          } else {
-            console.log('successfully inserted user into table')
-          }
+        showError.value = error.message
+        return
+      }
+      const user = data?.user
+      if (user) {
+        const { error: insertError } = await supabase.from('Users').insert({
+          id: user.id,
+          Email: user.email,
+          Username: userStore.username,
+          Friends: [],
+        })
+        if (insertError) {
+          showError.value = insertError.message
         }
       }
     }
