@@ -2,35 +2,58 @@
   <div class="min-h-screen flex items-center justify-center bg-base-200">
     <div class="w-full max-w-md p-8 space-y-6 bg-base-100 shadow-lg rounded-box">
       <h1 class="text-3xl font-bold text-center">Sign Up (i luv chatgpt styling)</h1>
-      
+
       <div class="form-control text-center">
         <label class="">
           <span class="font-bold">Email</span>
         </label>
-        <br>
-        <input v-model="userStore.email" type="text" placeholder="Email" class="input input-bordered" />
+        <br />
+        <input
+          v-model="userStore.email"
+          type="text"
+          placeholder="Email"
+          class="input input-bordered"
+        />
       </div>
 
       <div class="form-control text-center">
         <label class="">
           <span class="font-bold">Username</span>
         </label>
-        <input v-model="userStore.username" type="text" placeholder="Username" class="input input-bordered" />
+        <input
+          v-model="userStore.username"
+          type="text"
+          placeholder="Username"
+          class="input input-bordered"
+        />
       </div>
 
       <div class="form-control text-center">
         <label class="">
           <span class="font-bold">Password</span>
         </label>
-        <input v-model="userStore.password" type="password" placeholder="Password" class="input input-bordered" />
+        <input
+          v-model="userStore.password"
+          type="password"
+          placeholder="Password"
+          class="input input-bordered"
+        />
       </div>
-      
+
       <div class="text-center">
         <button class="btn btn-primary w-[70%]" @click="signUpWithUser()">Sign up!</button>
       </div>
 
       <div class="text-center">
-        <RouterLink to="/login" class="link link-primary">Already have an account? Log in here!</RouterLink>
+        <RouterLink to="/" v-if="userStore.loggedIn" class="text-red-400 font-semibold">
+          Reroute to main page
+        </RouterLink>
+      </div>
+
+      <div class="text-center">
+        <RouterLink to="/login" class="link link-primary"
+          >Already have an account? Log in here!</RouterLink
+        >
       </div>
 
       <div v-if="showError" class="text-red-400 text-center font-semibold">
