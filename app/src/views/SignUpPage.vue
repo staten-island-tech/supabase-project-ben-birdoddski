@@ -1,7 +1,20 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-base-200">
     <div class="w-full max-w-md p-8 space-y-6 bg-base-100 shadow-lg rounded-box">
-      <h1 class="text-3xl font-bold text-center">Log In (i luv chatgpt styling)</h1>
+      <h1 class="text-3xl font-bold text-center">Sign Up (i luv chatgpt styling)</h1>
+
+      <div class="form-control text-center">
+        <label class="">
+          <span class="font-bold">Email</span>
+        </label>
+        <br />
+        <input
+          v-model="userStore.email"
+          type="text"
+          placeholder="Email"
+          class="input input-bordered"
+        />
+      </div>
 
       <div class="form-control text-center">
         <label class="">
@@ -28,11 +41,7 @@
       </div>
 
       <div class="text-center">
-        <button class="btn btn-primary w-[70%]" @click="signInWithUser()">Login</button>
-      </div>
-
-      <div v-if="showError" class="text-error text-center font-semibold">
-        {{ showError }}
+        <button class="btn btn-primary w-[70%]" @click="signUpWithUser()">Sign up!</button>
       </div>
 
       <div class="text-center">
@@ -42,9 +51,13 @@
       </div>
 
       <div class="text-center">
-        <RouterLink to="/signup" class="link link-primary"
-          >Don't have an account? Sign up here!</RouterLink
+        <RouterLink to="/login" class="link link-primary"
+          >Already have an account? Log in here!</RouterLink
         >
+      </div>
+
+      <div v-if="showError" class="text-red-400 text-center font-semibold">
+        {{ showError }}
       </div>
     </div>
   </div>
@@ -52,30 +65,39 @@
 
 <script lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { supabase } from '../lib/supabaseClient'
 import { useUserStore } from '../stores/uservalue'
+import type DatabaseUser from '../Types/Interfaces'
 export default {
   setup() {
-    const showError = ref<string>('')
-    const redirect = useRouter()
     const userStore = useUserStore()
-    async function signInWithUser() {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: userStore.username,
+    const showError = ref<string>()
+    async function signUpWithUser() {
+      const { data, error } = await supabase.auth.signUp({
+        email: userStore.email,
         password: userStore.password,
       })
       if (error) {
-        console.error('Error signing up:', error.message)
-      } else {
-        userStore.loggedIn = true
-        redirect.push('/') //redirects to main page
+        showError.value = error.message
+        return
+      }
+      const user = data?.user
+      if (user) {
+        const { error: insertError } = await supabase.from('Users').insert({
+          id: user.id,
+          Email: user.email,
+          Username: userStore.username,
+          Friends: [],
+        })
+        if (insertError) {
+          showError.value = insertError.message
+        }
       }
     }
     return {
       userStore,
       showError,
-      signInWithUser,
+      signUpWithUser,
     }
   },
 }
