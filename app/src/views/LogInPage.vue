@@ -69,6 +69,7 @@ export default {
         console.error('Error signing up:', error.message)
       } else {
         userStore.loggedIn = true
+        userStore.password = ""
         redirect.push('/') //redirects to main page
       }
     }

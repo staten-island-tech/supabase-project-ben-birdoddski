@@ -67,7 +67,6 @@
 import { ref } from 'vue'
 import { supabase } from '../lib/supabaseClient'
 import { useUserStore } from '../stores/uservalue'
-import type DatabaseUser from '../Types/Interfaces'
 export default {
   setup() {
     const userStore = useUserStore()
