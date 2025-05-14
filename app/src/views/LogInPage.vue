@@ -5,12 +5,13 @@
 
       <div class="form-control text-center">
         <label class="">
-          <span class="font-bold">Username</span>
+          <span class="font-bold">Email</span>
         </label>
+        <br>
         <input
-          v-model="userStore.username"
+          v-model="userStore.email"
           type="text"
-          placeholder="Username"
+          placeholder="Email"
           class="input input-bordered"
         />
       </div>
@@ -62,7 +63,7 @@ export default {
     const userStore = useUserStore()
     async function signInWithUser() {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: userStore.username,
+        email: userStore.email,
         password: userStore.password,
       })
       if (error) {
