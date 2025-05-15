@@ -1,9 +1,9 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-base-200">
     <div class="w-full max-w-md p-8 space-y-6 bg-base-100 shadow-lg rounded-box">
-      <h1 class="text-3xl font-bold text-center">Sign Up (i luv chatgpt styling)</h1>
+      <h1 class="text-3xl font-bold text-center">Sign Up</h1>
 
-      <div class="form-control text-center">
+      <div class="form-control w-full">
         <label class="">
           <span class="font-bold">Email</span>
         </label>
@@ -12,11 +12,11 @@
           v-model="userStore.email"
           type="text"
           placeholder="Email"
-          class="input input-bordered"
+          class="input input-bordered w-full"
         />
       </div>
 
-      <div class="form-control text-center">
+      <div class="form-control">
         <label class="">
           <span class="font-bold">Username</span>
         </label>
@@ -24,11 +24,11 @@
           v-model="userStore.username"
           type="text"
           placeholder="Username"
-          class="input input-bordered"
+          class="input input-bordered w-full"
         />
       </div>
 
-      <div class="form-control text-center">
+      <div class="form-control">
         <label class="">
           <span class="font-bold">Password</span>
         </label>
@@ -36,12 +36,12 @@
           v-model="userStore.password"
           type="password"
           placeholder="Password"
-          class="input input-bordered"
+          class="input input-bordered w-full"
         />
       </div>
 
-      <div class="text-center">
-        <button class="btn btn-primary w-[70%]" @click="signUpWithUser()">Sign up!</button>
+      <div class="text-center w-full">
+        <button class="btn btn-primary w-full" @click="signUpWithUser()">Sign up!</button>
       </div>
 
       <div class="text-center">
