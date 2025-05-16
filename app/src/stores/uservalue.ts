@@ -5,11 +5,11 @@ export const useUserStore = defineStore('user', () => {
   const email = ref<string>('')
   const username = ref<string>('')
   const password = ref<string>('')
-  const loggedIn = ref<boolean>(false)
+  const loggedIn = ref<boolean>(true)
   return {
     email,
     username,
     password,
-    loggedIn
+    loggedIn,
   }
 })

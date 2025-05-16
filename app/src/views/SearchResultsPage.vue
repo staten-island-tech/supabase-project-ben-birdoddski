@@ -48,6 +48,10 @@
     </div>
     <div class="relative px-4 py-10 bg-gray-100">
       <h2 class="text-3xl font-bold mb-6 text-center">Explore Time Capsules</h2>
+      <p class="text-lg text-gray-700 mb-6 text-center">
+        Showing results for <span class="font-semibold">{{ $route.params.term }}</span
+        >.
+      </p>
       <h1 class="font-bold text-lg p-3 bg-slate-500 w-fit underline">Opening Soon</h1>
       <CapsuleCarousel :posts="examplePosts.filter((p) => p.countdown && !p.isAvailable)" />
 
