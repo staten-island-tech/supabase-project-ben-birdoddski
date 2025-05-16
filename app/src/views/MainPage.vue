@@ -62,7 +62,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup >
 import { ref, onMounted, computed } from 'vue'
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import { useUserStore } from '../stores/uservalue'

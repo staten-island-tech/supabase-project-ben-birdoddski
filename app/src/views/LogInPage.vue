@@ -80,34 +80,26 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '../lib/supabaseClient'
 import { useUserStore } from '../stores/uservalue'
-export default {
-  setup() {
-    const showError = ref<string>('')
-    const redirect = useRouter()
-    const userStore = useUserStore()
-    async function signInWithUser() {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: userStore.email,
-        password: userStore.password,
-      })
-      if (error) {
-        console.error('Error signing up:', error.message)
-      } else {
-        userStore.loggedIn = true
-        userStore.password = ''
-        redirect.push('/') //redirects to main page
-      }
-    }
-    return {
-      userStore,
-      showError,
-      signInWithUser,
-    }
-  },
+
+const showError = ref<string>('')
+const redirect = useRouter()
+const userStore = useUserStore()
+async function signInWithUser() {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: userStore.email,
+    password: userStore.password,
+  })
+  if (error) {
+    console.error('Error signing up:', error.message)
+  } else {
+    userStore.loggedIn = true
+    userStore.password = ''
+    redirect.push('/')
+  }
 }
 </script>
