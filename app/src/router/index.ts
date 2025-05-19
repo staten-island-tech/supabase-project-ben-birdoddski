@@ -32,6 +32,11 @@ const router = createRouter({
       name: 'SearchResults',
       component: SearchResultsPage,
     },
+    {
+      path: '/PostPage',
+      name: 'Post',
+      component: () => import('../views/PostPage.vue'),
+    },
   ],
 })
 

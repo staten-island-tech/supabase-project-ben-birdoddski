@@ -47,6 +47,10 @@
       </div>
     </div>
     <div class="relative px-4 py-10 bg-gray-100">
+      <div class="text-center">
+        <RouterLink to="/PostPage" class="link link-primary"
+          >testing</RouterLink>
+      </div>
       <h2 class="text-3xl font-bold mb-6 text-center">Explore Time Capsules</h2>
       <h1 class="font-bold text-lg p-3 bg-slate-500 w-fit underline">Opening Soon</h1>
       <CapsuleCarousel :posts="examplePosts.filter((p) => p.countdown && !p.isAvailable)" />
