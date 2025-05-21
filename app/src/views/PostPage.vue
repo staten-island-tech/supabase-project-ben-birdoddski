@@ -46,9 +46,9 @@
         />
         <fieldset class="fieldset bg-base-100 border-base-300 rounded-box w-64 border p-4">
           <legend class="fieldset-legend">Post Options</legend>
-          <label class="label space-x-2 items-center">
+          <label class="label space-x-2 items-center font-bold">
             <input v-model="visible" type="checkbox" class="toggle" />
-            <span>Visible for friends?</span>
+            <span>Set to Public</span>
           </label>
         </fieldset>
         <div>
@@ -56,9 +56,11 @@
           <input v-model="viewDate" type="date" class="input input-bordered w-full" />
         </div>
         <h1 class="text-xl font-semibold">Optional:</h1>
-        <input ref="fileInput" type="file" class="file-input w-full max-w-xs" />
+        <input
+          type="file"
+          class="file-input file-input-bordered file-input-primary w-full max-w-xs" />
         <div class="text-right">
-          <button class="btn btn-primary mt-4" @click="postme">Create Post</button>
+          <button class="btn btn-primary mt-4" @click="PostMe">Create Post</button>
         </div>
         <div v-if="showError" class="text-red-400 text-center font-semibold">
           {{ showError }}
@@ -102,7 +104,7 @@ const Header = ref('')
 const BodyText = ref('')
 const fileInput = ref<HTMLInputElement | null>(null)
 
-async function postme() {
+async function PostMe() {
   const file = fileInput.value?.files?.[0] || null
   const { error: insertError } = await supabase.from('Capsule Data').insert({
     Header: Header.value,
