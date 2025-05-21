@@ -63,41 +63,33 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { ref } from 'vue'
 import { supabase } from '../lib/supabaseClient'
 import { useUserStore } from '../stores/uservalue'
-export default {
-  setup() {
-    const userStore = useUserStore()
-    const showError = ref<string>()
-    async function signUpWithUser() {
-      const { data, error } = await supabase.auth.signUp({
-        email: userStore.email,
-        password: userStore.password,
-      })
-      if (error) {
-        showError.value = error.message
-        return
-      }
-      const user = data?.user
-      if (user) {
-        const { error: insertError } = await supabase.from('Users').insert({
-          id: user.id,
-          Email: user.email,
-          Username: userStore.username,
-          Friends: [],
-        })
-        if (insertError) {
-          showError.value = insertError.message
-        }
-      }
+
+const userStore = useUserStore()
+const showError = ref<string>()
+async function signUpWithUser() {
+  const { data, error } = await supabase.auth.signUp({
+    email: userStore.email,
+    password: userStore.password,
+  })
+  if (error) {
+    showError.value = error.message
+    return
+  }
+  const user = data?.user
+  if (user) {
+    const { error: insertError } = await supabase.from('Users').insert({
+      id: user.id,
+      Email: user.email,
+      Username: userStore.username,
+      Friends: [],
+    })
+    if (insertError) {
+      showError.value = insertError.message
     }
-    return {
-      userStore,
-      showError,
-      signUpWithUser,
-    }
-  },
+  }
 }
 </script>

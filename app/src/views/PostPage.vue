@@ -2,10 +2,7 @@
   <div class="min-h-screen bg-gray-100">
     <header class="bg-white shadow sticky top-0 z-50">
       <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <RouterLink to="/" class="text-2xl font-bold text-purple-600">
-          Time Capsule
-        </RouterLink>
-
+        <RouterLink to="/" class="text-2xl font-bold text-purple-600"> Time Capsule </RouterLink>
         <input
           type="text"
           @keyup.enter="router.push('/search/' + searchQuery)"
@@ -13,7 +10,6 @@
           placeholder="Search capsules..."
           class="w-1/2 px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-400"
         />
-
         <div v-if="userStore.loggedIn" class="ml-4 flex items-center space-x-4">
           <RouterLink
             to="/profile"
@@ -31,40 +27,47 @@
         </div>
       </div>
     </header>
-
-    <div v-if="userStore.loggedIn" class="relative px-4 py-10 bg-gray-100">
-      <div class="card bg-base-100 w-[70%] shadow-xl">
-        <h1>Header: </h1>
+    <div v-if="userStore.loggedIn" class="relative px-4 py-10 bg-gray-100 flex justify-center">
+      <div class="card bg-white w-full max-w-2xl shadow-xl p-6 rounded-2xl space-y-4">
+        <h1 class="text-xl font-semibold">Header:</h1>
         <input
-          v-model="smthelse"
+          v-model="Header"
           type="text"
           placeholder="Header"
-          class="input input-bordered w-[60%] m-2"
+          class="input input-bordered w-full"
         />
-        <h1>Text: </h1>
+
+        <h1 class="text-xl font-semibold">Text:</h1>
         <input
-          v-model="yellow"
+          v-model="BodyText"
           type="text"
           placeholder="Text"
-          class="input input-bordered w-[60%] m-2"
+          class="input input-bordered w-full"
         />
-        <input type="file" class="file-input w-full max-w-xs  m-2" />
-        <div class="text-center">
-          <button
-            class="btn absolute right-[2%] bottom-[2%] btn-primary w-[20%]"
-            @click="postme"
-          >
-            Create Post
-          </button>
+        <fieldset class="fieldset bg-base-100 border-base-300 rounded-box w-64 border p-4">
+          <legend class="fieldset-legend">Post Options</legend>
+          <label class="label space-x-2 items-center">
+            <input v-model="visible" type="checkbox" class="toggle" />
+            <span>Visible for friends?</span>
+          </label>
+        </fieldset>
+        <div>
+          <h1 class="text-xl font-semibold">Unlock Date:</h1>
+          <input v-model="viewDate" type="date" class="input input-bordered w-full" />
+        </div>
+        <h1 class="text-xl font-semibold">Optional:</h1>
+        <input ref="fileInput" type="file" class="file-input w-full max-w-xs" />
+        <div class="text-right">
+          <button class="btn btn-primary mt-4" @click="postme">Create Post</button>
+        </div>
+        <div v-if="showError" class="text-red-400 text-center font-semibold">
+          {{ showError }}
         </div>
       </div>
     </div>
-
     <div v-if="!userStore.loggedIn" class="text-center py-24 px-6">
       <h1 class="text-5xl font-bold text-purple-700 mb-4">Welcome to Time Capsule</h1>
-      <p class="text-lg text-gray-700 mb-8">
-        Sign up or log in to view and create time capsules!
-      </p>
+      <p class="text-lg text-gray-700 mb-8">Sign up or log in to view and create time capsules!</p>
       <div class="space-x-4">
         <RouterLink
           to="/signup"
@@ -85,17 +88,32 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { supabase } from '../lib/supabaseClient'
 import { useUserStore } from '../stores/uservalue'
 import { useRouter } from 'vue-router'
 
 const userStore = useUserStore()
 const router = useRouter()
-
+const showError = ref<string>()
+const viewDate = ref('')
+const visible = ref('')
 const searchQuery = ref('')
-const smthelse = ref('')
-const yellow = ref('')
+const Header = ref('')
+const BodyText = ref('')
+const fileInput = ref<HTMLInputElement | null>(null)
 
 async function postme() {
-  
+  const file = fileInput.value?.files?.[0] || null
+  const { error: insertError } = await supabase.from('Capsule Data').insert({
+    Header: Header.value,
+    Text: BodyText.value,
+    Image: file, //make this into the URL NOT ACTUAL FILE
+    User: userStore.username,
+    Unlock: viewDate.value,
+    Visbility: visible.value,
+  })
+  if (insertError) {
+    showError.value = insertError.message
+  }
 }
 </script>
