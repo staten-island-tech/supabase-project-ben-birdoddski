@@ -78,7 +78,7 @@ import { useRoute } from 'vue-router'
 const userStore = useUserStore()
 const router = useRouter()
 const searchQuery = ref('')
-
+//make into a component for simplicity
 const examplePosts = [
   {
     id: 1,

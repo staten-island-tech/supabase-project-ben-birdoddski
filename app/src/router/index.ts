@@ -33,10 +33,15 @@ const router = createRouter({
       component: SearchResultsPage,
     },
     {
-      path: '/PostPage',
-      name: 'Post',
-      component: () => import('../views/PostPage.vue'),
+      path: '/CreatePost',
+      name: 'CreatePost',
+      component: () => import('../views/CreatePost.vue'),
     },
+    {
+      path: '/ViewPost',
+      name: 'ViewPost',
+      component: () => import('../views/ViewPost.vue'),
+    }
   ],
 })
 

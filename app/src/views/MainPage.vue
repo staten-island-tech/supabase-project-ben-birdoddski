@@ -48,8 +48,12 @@
     </div>
     <div class="relative px-4 py-10 bg-gray-100">
       <div class="text-center">
-        <RouterLink to="/PostPage" class="link link-primary"
+        <RouterLink to="/CreatePost" class="link link-primary"
           >testing</RouterLink>
+      </div>
+      <div class="text-center">
+        <RouterLink to="/ViewPost" class="link link-primary"
+          >testing2</RouterLink>
       </div>
       <h2 class="text-3xl font-bold mb-6 text-center">Explore Time Capsules</h2>
       <h1 class="font-bold text-lg p-3 bg-slate-500 w-fit underline">Opening Soon</h1>
@@ -66,7 +70,7 @@
   </div>
 </template>
 
-<script setup >
+<script setup>
 import { ref, onMounted, computed } from 'vue'
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import { useUserStore } from '../stores/uservalue'
@@ -134,7 +138,7 @@ const examplePosts = [
     title: 'High School Friends',
     description: 'Photos and letters',
     isAvailable: false,
-    countdown: '6h',
+    countdown: '6h'
   },
   {
     id: 1,
