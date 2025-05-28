@@ -29,7 +29,6 @@
         </div>
       </div>
     </header>
-  </div>
     <div v-if="!userStore.loggedIn" class="text-center py-24 px-6">
       <h1 class="text-5xl font-bold text-purple-700 mb-4">Welcome to Time Capsule</h1>
       <p class="text-lg text-gray-700 mb-8">Sign up or log in to view and create time capsules!</p>
@@ -47,27 +46,30 @@
       </div>
     </div>
     <div class="card bg-base-100 w-96 shadow-xl">
-  <div class="card-body items-center text-center">
-    <h2 class="card-title">Shoes!</h2>
-    <p>If a dog chews shoes whose shoes does he choose?</p>
-    <p>Date Released</p>
-  </div>
-  <figure class="px-10 pt-10">
-    <img
-      src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
-      alt="Shoes"
-      class="rounded-xl" />
-  </figure>
+      <div class="card-body items-center text-center">
+        <h2 class="card-title">Shoes!</h2>
+        <p>If a dog chews shoes whose shoes does he choose?</p>
+        <p>Date Released</p>
+      </div>
+      <figure class="px-10 pt-10">
+        <img
+          src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
+          alt="Shoes"
+          class="rounded-xl"
+        />
+      </figure>
     </div>
+  </div>
 </template>
 <script setup lang="ts">
-import {supabase} from '../lib/supabaseClient'
-import { usePostStore } from '@/stores/postvalue';
+import { supabase } from '../lib/supabaseClient'
+import { usePostStore } from '../stores/postvalue'
 import { useUserStore } from '../stores/uservalue'
 import { useRouter } from 'vue-router'
 import { RouterLink } from 'vue-router'
-import { ref } from 'vue';
+import { ref } from 'vue'
 const userStore = useUserStore()
+const postStore = usePostStore()
 const searchQuery = ref('')
 const router = useRouter()
 

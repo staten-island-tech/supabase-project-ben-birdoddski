@@ -58,7 +58,9 @@
         <h1 class="text-xl font-semibold">Optional:</h1>
         <input
           type="file"
-          class="file-input file-input-bordered file-input-primary w-full max-w-xs" />
+          ref="fileInput"
+          class="file-input file-input-bordered file-input-primary w-full max-w-xs"
+        />
         <div class="text-right">
           <button class="btn btn-primary mt-4" @click="PostMe">Create Post</button>
         </div>
@@ -93,29 +95,43 @@ import { ref } from 'vue'
 import { supabase } from '../lib/supabaseClient'
 import { useUserStore } from '../stores/uservalue'
 import { useRouter } from 'vue-router'
+import { nanoid } from 'nanoid'
 
 const userStore = useUserStore()
 const router = useRouter()
 const showError = ref<string>()
-const viewDate = ref('')
-const visible = ref('')
-const searchQuery = ref('')
-const Header = ref('')
-const BodyText = ref('')
+
+const searchQuery = ref<string>('')
+const Header = ref<string>('')
+const BodyText = ref<string>('')
 const fileInput = ref<HTMLInputElement | null>(null)
+const viewDate = ref<Date>()
+const visible = ref<boolean>(false)
+const imagelink = ref<string | null>(null)
 
 async function PostMe() {
   const file = fileInput.value?.files?.[0] || null
+  if (file) {
+    const fileName = `${userStore.username}/${Date.now()}_${file.name}` //date.now for unique ID
+    const { error: uploadError } = await supabase.storage.from('images').upload(fileName, file) //supabase to store id
+    if (uploadError) {
+      showError.value = `Upload failed: ${uploadError.message}`
+      return
+    }
+    imagelink.value = supabase.storage.from('uploads').getPublicUrl(fileName).data.publicUrl
+  }
   const { error: insertError } = await supabase.from('Capsule Data').insert({
     Header: Header.value,
     Text: BodyText.value,
-    Image: file, //make this into the URL NOT ACTUAL FILE
+    Image: imagelink || null,
     User: userStore.username,
     Unlock: viewDate.value,
     Visbility: visible.value,
   })
   if (insertError) {
     showError.value = insertError.message
+  } else {
+    router.push('/')
   }
 }
 </script>
