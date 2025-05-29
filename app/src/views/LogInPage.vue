@@ -90,16 +90,22 @@ const showError = ref<string>('')
 const redirect = useRouter()
 const userStore = useUserStore()
 async function signInWithUser() {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: userStore.email,
-    password: userStore.password,
-  })
-  if (error) {
-    console.error('Error signing up:', error.message)
-  } else {
-    userStore.loggedIn = true
-    userStore.password = ''
-    redirect.push('/')
+  if (userStore.email&&userStore.password) {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: userStore.email,
+      password: userStore.password,
+    })
+    if (error) {
+      console.error('Error signing up:', error.message)
+    } else {
+      userStore.loggedIn = true
+      userStore.password = ''
+      redirect.push('/')
   }
+  }
+  
+}
+if (userStore.loggedIn) {
+  redirect.push('/')
 }
 </script>

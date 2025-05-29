@@ -46,7 +46,7 @@
         >
       </div>
     </div>
-    <div class="relative px-4 py-10 bg-gray-100">
+    <div v-if="userStore.loggedIn" class="relative px-4 py-10 bg-gray-100">
       <div class="text-center">
         <RouterLink to="/CreatePost" class="link link-primary">testing</RouterLink>
       </div>

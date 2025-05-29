@@ -9,9 +9,7 @@ import { supabase } from './lib/supabaseClient'
 import { useUserStore } from './stores/uservalue'
 const userStore = useUserStore()
 onMounted(async () => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const {data: { user }} = await supabase.auth.getUser()
   if (user) {
     userStore.setUser(user)
   }
