@@ -48,7 +48,7 @@
           <legend class="fieldset-legend">Post Options</legend>
           <label class="label space-x-2 items-center font-bold">
             <input v-model="visible" type="checkbox" class="toggle" />
-            <span>Set to Public</span>
+            <span>Set to Private</span>
           </label>
         </fieldset>
         <div>
@@ -96,6 +96,7 @@ import { supabase } from '../lib/supabaseClient'
 import { useUserStore } from '../stores/uservalue'
 import { useRouter } from 'vue-router'
 import { nanoid } from 'nanoid'
+import { Users } from 'lucide-vue-next'
 
 const userStore = useUserStore()
 const router = useRouter()
@@ -124,13 +125,14 @@ async function PostMe() {
     }
     imagelink.value = supabase.storage.from('images').getPublicUrl(fileName).data.publicUrl
   }
-  const { error: insertError } = await supabase.from('Capsule Data').insert({
+  const { error: insertError } = await supabase.from('CapsuleData').insert({
+    UsersID: userStore.userID,
     Header: Header.value,
     Text: BodyText.value,
-    Image: imagelink.value || null,
-    User: userStore.username,
+    Images: imagelink.value || null,
+    Username: userStore.username,
     Unlock: viewDate.value,
-    Visibility: visible.value,
+    FriendVisibility: visible.value,
   })
   if (insertError) {
     showError.value = insertError.message

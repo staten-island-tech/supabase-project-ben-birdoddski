@@ -48,12 +48,10 @@
     </div>
     <div class="relative px-4 py-10 bg-gray-100">
       <div class="text-center">
-        <RouterLink to="/CreatePost" class="link link-primary"
-          >testing</RouterLink>
+        <RouterLink to="/CreatePost" class="link link-primary">testing</RouterLink>
       </div>
       <div class="text-center">
-        <RouterLink to="/ViewPost" class="link link-primary"
-          >testing2</RouterLink>
+        <RouterLink to="/ViewPost" class="link link-primary">testing2</RouterLink>
       </div>
       <h2 class="text-3xl font-bold mb-6 text-center">Explore Time Capsules</h2>
       <h1 class="font-bold text-lg p-3 bg-slate-500 w-fit underline">Opening Soon</h1>
@@ -82,9 +80,6 @@ import { useRoute } from 'vue-router'
 const userStore = useUserStore()
 const router = useRouter()
 const searchQuery = ref('')
-
-const { data, error } = await supabase.from('Capsule Data').select()
-console.log(data)
 
 const examplePosts = [
   {
@@ -141,7 +136,7 @@ const examplePosts = [
     title: 'High School Friends',
     description: 'Photos and letters',
     isAvailable: false,
-    countdown: '6h'
+    countdown: '6h',
   },
   {
     id: 1,

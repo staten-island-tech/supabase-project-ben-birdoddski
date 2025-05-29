@@ -72,7 +72,4 @@ const userStore = useUserStore()
 const postStore = usePostStore()
 const searchQuery = ref('')
 const router = useRouter()
-
-const { data, error } = await supabase.from('Capsule Data').select()
-console.log(data)
 </script>
