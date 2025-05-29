@@ -4,8 +4,6 @@ import LogInPage from '../views/LogInPage.vue'
 import SignUpPage from '../views/SignUpPage.vue'
 import SearchResultsPage from '@/views/SearchResultsPage.vue'
 import { useUserStore } from '../stores/uservalue'
-const userStore = useUserStore()
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -28,34 +26,37 @@ const router = createRouter({
       path: '/profile',
       name: 'Profile',
       component: () => import('../views/ProfilePage.vue'),
-      meta: {},
+      meta: {requiresAuth: true},
     },
     {
       path: '/search/:term',
       name: 'SearchResults',
       component: SearchResultsPage,
-      meta: {},
+      meta: {requiresAuth: true},
     },
     {
       path: '/CreatePost',
       name: 'CreatePost',
       component: () => import('../views/CreatePost.vue'),
-      meta: {},
+      meta: {requiresAuth: true},
     },
     {
       path: '/ViewPost',
       name: 'ViewPost',
       component: () => import('../views/ViewPost.vue'),
-      meta: {require: userStore.loggedIn},
+      meta: {requiresAuth: true},
     }
   ],
 })
 
-router.beforeEach((to, from) => {
+router.beforeEach((to, from, next) => {
+  const userStore = useUserStore()
   if (
-    !userStore.loggedIn && to.name !== 'Home'||'Sign Up'||'Login'
+    to.meta.requiresAuth==true&&!userStore.loggedIn
   ) {
-    return { name: 'Home' }
+    next({name: 'Login'})
+  } else {
+    next()
   }
 })
 export default router

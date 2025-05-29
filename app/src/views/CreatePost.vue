@@ -105,28 +105,32 @@ const searchQuery = ref<string>('')
 const Header = ref<string>('')
 const BodyText = ref<string>('')
 const fileInput = ref<HTMLInputElement | null>(null)
-const viewDate = ref<Date>()
+const viewDate = ref<string>('')
 const visible = ref<boolean>(false)
 const imagelink = ref<string | null>(null)
 
 async function PostMe() {
   const file = fileInput.value?.files?.[0] || null
+  if (!Header.value || !BodyText.value || !viewDate.value) {
+    showError.value = 'Please enter in all the required fields.'
+    return
+  }
   if (file) {
     const fileName = `${userStore.username}/${Date.now()}_${file.name}` //date.now for unique ID
-    const { error: uploadError } = await supabase.storage.from('images').upload(fileName, file) //supabase to store id
+    const { error: uploadError } = await supabase.storage.from('images').upload(fileName, file)
     if (uploadError) {
       showError.value = `Upload failed: ${uploadError.message}`
       return
     }
-    imagelink.value = supabase.storage.from('uploads').getPublicUrl(fileName).data.publicUrl
+    imagelink.value = supabase.storage.from('images').getPublicUrl(fileName).data.publicUrl
   }
   const { error: insertError } = await supabase.from('Capsule Data').insert({
     Header: Header.value,
     Text: BodyText.value,
-    Image: imagelink || null,
+    Image: imagelink.value || null,
     User: userStore.username,
     Unlock: viewDate.value,
-    Visbility: visible.value,
+    Visibility: visible.value,
   })
   if (insertError) {
     showError.value = insertError.message
