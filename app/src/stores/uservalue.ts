@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabaseClient'
 import type { User } from '@supabase/supabase-js'
 
 export const useUserStore = defineStore('user', () => {
-  const email = ref<string|undefined>('')
+  const email = ref<string>('')
   const username = ref<string>('')
   const password = ref<string>('')
   const loggedIn = ref<boolean>(false)
@@ -12,7 +12,9 @@ export const useUserStore = defineStore('user', () => {
   async function setUser(user: User | null) {
     if (user) {
       userID.value = user.id
-      email.value = user.email
+      if (user.email!=undefined) {
+        email.value = user.email
+      }
       loggedIn.value = true
       password.value = ''
       const { data, error } = await supabase.from('Users').select('username').eq('id', user.id).single()

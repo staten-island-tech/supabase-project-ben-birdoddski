@@ -54,7 +54,7 @@ import { ref } from 'vue'
 import { useUserStore } from '../stores/uservalue'
 
 const userStore = useUserStore()
-
+console.log(userStore.username)
 const lockImage = 'https://www.svgrepo.com/show/13695/lock.svg'
 const openImage = 'https://www.svgrepo.com/show/119792/unlock.svg'
 
