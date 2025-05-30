@@ -103,7 +103,6 @@ async function signInWithUser() {
       redirect.push('/')
   }
   }
-  
 }
 if (userStore.loggedIn) {
   redirect.push('/')

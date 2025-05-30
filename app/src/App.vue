@@ -13,8 +13,13 @@ onMounted(async () => {
     data: { user },
   } = await supabase.auth.getUser()
   if (user) {
-    userStore.setUser(user)
-    console.log(userStore.username)
+    console.log(user.email)
+    const { data, error } = await supabase.from('users').select().eq('Email', user.email)
+    console.log(data)
+    if (data) {
+      userStore.setUser(data[0])
+    }
+    
   }
 })
 </script>
