@@ -10,7 +10,7 @@
       <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-6">
         <img src="" class="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-2 border-purple-500" />
         <div class="mt-4 sm:mt-0">
-          <h2 class="text-2xl font-semibold">{{ userStore.username || 'username' }}</h2>
+          <h2 class="text-2xl font-semibold">{{ userStore.user.username || 'username' }}</h2>
           <p class="text-sm text-gray-500">I cant rmember stuff so i do this</p>
           <div class="mt-2 text-sm text-gray-700 flex gap-4">
             <span
@@ -54,7 +54,6 @@ import { ref } from 'vue'
 import { useUserStore } from '../stores/uservalue'
 
 const userStore = useUserStore()
-console.log(userStore.username)
 const lockImage = 'https://www.svgrepo.com/show/13695/lock.svg'
 const openImage = 'https://www.svgrepo.com/show/119792/unlock.svg'
 

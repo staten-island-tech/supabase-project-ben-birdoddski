@@ -12,14 +12,16 @@ onMounted(async () => {
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  if (user) {
-    console.log(user.email)
-    const { data, error } = await supabase.from('users').select().eq('Email', user.email)
-    console.log(data)
-    if (data) {
-      userStore.setUser(data[0])
-    }
-    
+  if (user && !userStore.user.loggedIn) {
+    await userStore.setUser(user)
   }
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    // for when userstate changes, logging in, logging out
+    if (session?.user) {
+      await userStore.setUser(session.user)
+    } else {
+      userStore.clearUser()
+    }
+  })
 })
 </script>

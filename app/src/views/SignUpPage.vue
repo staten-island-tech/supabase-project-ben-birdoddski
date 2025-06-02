@@ -9,7 +9,7 @@
         </label>
         <br />
         <input
-          v-model="userStore.email"
+          v-model="userStore.user.email"
           type="text"
           placeholder="Email"
           class="input input-bordered w-full"
@@ -21,7 +21,7 @@
           <span class="font-bold">Username</span>
         </label>
         <input
-          v-model="userStore.username"
+          v-model="userStore.user.username"
           type="text"
           placeholder="Username"
           class="input input-bordered w-full"
@@ -33,7 +33,7 @@
           <span class="font-bold">Password</span>
         </label>
         <input
-          v-model="userStore.password"
+          v-model="userStore.user.password"
           type="password"
           placeholder="Password"
           class="input input-bordered w-full"
@@ -45,7 +45,7 @@
       </div>
 
       <div class="text-center">
-        <RouterLink to="/" v-if="userStore.loggedIn" class="text-red-400 font-semibold">
+        <RouterLink to="/" v-if="userStore.user.loggedIn" class="text-red-400 font-semibold">
           Reroute to main page
         </RouterLink>
       </div>
@@ -72,8 +72,8 @@ const userStore = useUserStore()
 const showError = ref<string>()
 async function signUpWithUser() {
   const { data, error } = await supabase.auth.signUp({
-    email: userStore.email,
-    password: userStore.password,
+    email: userStore.user.email,
+    password: userStore.user.password,
   })
   if (error) {
     showError.value = error.message
@@ -84,8 +84,10 @@ async function signUpWithUser() {
     const { error: insertError } = await supabase.from('Users').insert({
       id: user.id,
       Email: user.email,
-      Username: userStore.username,
-      Friends: [],
+      Username: userStore.user.username,
+      Bio: '',
+      Following: [],
+      Followers: [],
     })
     if (insertError) {
       showError.value = insertError.message

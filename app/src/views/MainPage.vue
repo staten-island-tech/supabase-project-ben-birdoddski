@@ -12,7 +12,7 @@
           class="w-1/2 px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-400"
         />
 
-        <div v-if="userStore.loggedIn" class="ml-4 flex items-center space-x-4">
+        <div v-if="userStore.user.loggedIn" class="ml-4 flex items-center space-x-4">
           <RouterLink
             to="/profile"
             class="relative group rounded-full p-2 hover:bg-gray-200 transition"
@@ -30,7 +30,7 @@
       </div>
     </header>
 
-    <div v-if="!userStore.loggedIn" class="text-center py-24 px-6">
+    <div v-if="!userStore.user.loggedIn" class="text-center py-24 px-6">
       <h1 class="text-5xl font-bold text-purple-700 mb-4">Welcome to Time Capsule</h1>
       <p class="text-lg text-gray-700 mb-8">Sign up or log in to view and create time capsules!</p>
       <div class="space-x-4">
@@ -46,7 +46,7 @@
         >
       </div>
     </div>
-    <div v-if="userStore.loggedIn" class="relative px-4 py-10 bg-gray-100">
+    <div v-if="userStore.user.loggedIn" class="relative px-4 py-10 bg-gray-100">
       <div class="text-center">
         <RouterLink to="/CreatePost" class="link link-primary">testing</RouterLink>
       </div>
@@ -68,7 +68,7 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { ref, onMounted, computed } from 'vue'
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import { useUserStore } from '../stores/uservalue'
@@ -76,123 +76,10 @@ import { useRouter } from 'vue-router'
 import { RouterLink } from 'vue-router'
 import CapsuleCarousel from '../components/CapsuleCarousel.vue'
 import { useRoute } from 'vue-router'
-
+import type { CapsulePost } from '../Types/Interfaces'
 const userStore = useUserStore()
 const router = useRouter()
 const searchQuery = ref('')
 
-const examplePosts = [
-  {
-    id: 1,
-    title: 'Graduation',
-    description: 'Your graduation day photos',
-    isAvailable: true,
-    countdown: '',
-  },
-  {
-    id: 2,
-    title: 'Freshman Year',
-    description: 'Your first year memories',
-    isAvailable: false,
-    countdown: '2d 4h',
-  },
-  {
-    id: 3,
-    title: 'Time Capsule 2022',
-    description: 'A look back at 2022',
-    isAvailable: true,
-    countdown: '',
-  },
-  {
-    id: 4,
-    title: 'High School Friends',
-    description: 'Photos and letters',
-    isAvailable: false,
-    countdown: '6h',
-  },
-  {
-    id: 1,
-    title: 'Graduation',
-    description: 'Your graduation day photos',
-    isAvailable: true,
-    countdown: '',
-  },
-  {
-    id: 2,
-    title: 'Freshman Year',
-    description: 'Your first year memories',
-    isAvailable: false,
-    countdown: '2d 4h',
-  },
-  {
-    id: 3,
-    title: 'Time Capsule 2022',
-    description: 'A look back at 2022',
-    isAvailable: true,
-    countdown: '',
-  },
-  {
-    id: 4,
-    title: 'High School Friends',
-    description: 'Photos and letters',
-    isAvailable: false,
-    countdown: '6h',
-  },
-  {
-    id: 1,
-    title: 'Graduation',
-    description: 'Your graduation day photos',
-    isAvailable: true,
-    countdown: '',
-  },
-  {
-    id: 2,
-    title: 'Freshman Year',
-    description: 'Your first year memories',
-    isAvailable: false,
-    countdown: '2d 4h',
-  },
-  {
-    id: 3,
-    title: 'Time Capsule 2022',
-    description: 'A look back at 2022',
-    isAvailable: true,
-    countdown: '',
-  },
-  {
-    id: 4,
-    title: 'High School Friends',
-    description: 'Photos and letters',
-    isAvailable: false,
-    countdown: '6h',
-  },
-  {
-    id: 1,
-    title: 'Graduation',
-    description: 'Your graduation day photos',
-    isAvailable: true,
-    countdown: '',
-  },
-  {
-    id: 2,
-    title: 'Freshman Year',
-    description: 'Your first year memories',
-    isAvailable: false,
-    countdown: '2d 4h',
-  },
-  {
-    id: 3,
-    title: 'Time Capsule 2022',
-    description: 'A look back at 2022',
-    isAvailable: true,
-    countdown: '',
-  },
-  {
-    id: 4,
-    title: 'High School Friends',
-    description: 'Photos and letters',
-    isAvailable: false,
-    countdown: '6h',
-  },
-]
+const examplePosts: CapsulePost[] = []
 </script>

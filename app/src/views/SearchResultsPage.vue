@@ -12,7 +12,7 @@
           class="w-1/2 px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-400"
         />
 
-        <div v-if="userStore.loggedIn" class="ml-4 flex items-center space-x-4">
+        <div v-if="userStore.user.loggedIn" class="ml-4 flex items-center space-x-4">
           <RouterLink
             to="/profile"
             class="relative group rounded-full p-2 hover:bg-gray-200 transition"
@@ -30,7 +30,7 @@
       </div>
     </header>
 
-    <div v-if="!userStore.loggedIn" class="text-center py-24 px-6">
+    <div v-if="!userStore.user.loggedIn" class="text-center py-24 px-6">
       <h1 class="text-5xl font-bold text-purple-700 mb-4">Welcome to Time Capsule</h1>
       <p class="text-lg text-gray-700 mb-8">Sign up or log in to view and create time capsules!</p>
       <div class="space-x-4">

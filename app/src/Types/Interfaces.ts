@@ -1,6 +1,14 @@
-export default interface DatabaseUser {
-    id: string
+export interface LoginUser {
+    userID: string
     email: string
     username: string
-    friends: string[]|null
+    password: string
+    loggedIn: boolean
+}
+export interface CapsulePost {
+    id: number;
+    title: string;
+    description: string;
+    isAvailable: boolean;
+    countdown: string;
 }

@@ -2,39 +2,47 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { supabase } from '@/lib/supabaseClient'
 import type { User } from '@supabase/supabase-js'
-
+import type {LoginUser} from '../Types/Interfaces'
 export const useUserStore = defineStore('user', () => {
-  const email = ref<string>('')
-  const username = ref<string>('')
-  const password = ref<string>('')
-  const loggedIn = ref<boolean>(false)
-  const userID = ref<string>('')
-  async function setUser(user: User | null) {
-    if (user) {
-      userID.value = user.id
-      if (user.email!=undefined) {
-        email.value = user.email
-      }
-      loggedIn.value = true
-      password.value = ''
-      const { data, error } = await supabase.from('Users').select('username').eq('id', user.id).single()
-      if (!error && data) {
-        username.value = data.username||''
+  const user = ref<LoginUser>({
+    userID: '',
+    email: '',
+    username: '',
+    password: '',
+    loggedIn: false,
+  })
+  async function setUser(supabaseUser: User | null) {
+    if (user && supabaseUser) {
+      user.value.userID = supabaseUser.id
+      user.value.email = supabaseUser.email||''
+      user.value.loggedIn = true
+      user.value.password = ''
+      const { data, error } = await supabase
+        .from('Users')
+        .select('Username')
+        .eq('id', supabaseUser.id)
+        .single()
+      if (!error) {
+        user.value.username = data.Username || ''
       }
     } else {
-      userID.value = ''
-      email.value = ''
-      username.value = ''
-      password.value = ''
-      loggedIn.value = false
+      clearUser()
+    }
+  }
+  function clearUser() {
+    user.value = {
+      userID: '',
+      email: '',
+      username: '',
+      password: '',
+      loggedIn: false,
     }
   }
   return {
-    userID,
-    email,
-    username,
-    password,
-    loggedIn,
+    user,
     setUser,
+    clearUser,
   }
+}, {
+  persist: true,
 })

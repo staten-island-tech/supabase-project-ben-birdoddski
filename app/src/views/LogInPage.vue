@@ -10,7 +10,7 @@
           class="w-1/2 px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-400"
         />
 
-        <div v-if="userStore.loggedIn" class="ml-4 flex items-center space-x-4">
+        <div v-if="userStore.user.loggedIn" class="ml-4 flex items-center space-x-4">
           <RouterLink
             to="/profile"
             class="relative group rounded-full p-2 hover:bg-gray-200 transition"
@@ -37,7 +37,7 @@
           </label>
           <br />
           <input
-            v-model="userStore.email"
+            v-model="userStore.user.email"
             type="text"
             placeholder="Email"
             class="input input-bordered w-full"
@@ -49,7 +49,7 @@
             <span class="font-bold">Password</span>
           </label>
           <input
-            v-model="userStore.password"
+            v-model="userStore.user.password"
             type="password"
             placeholder="Password"
             class="input input-bordered w-full"
@@ -65,7 +65,7 @@
         </div>
 
         <div class="text-center">
-          <RouterLink to="/" v-if="userStore.loggedIn" class="text-red-400 font-semibold">
+          <RouterLink to="/" v-if="userStore.user.loggedIn" class="text-red-400 font-semibold">
             Reroute to main page
           </RouterLink>
         </div>
@@ -90,21 +90,21 @@ const showError = ref<string>('')
 const redirect = useRouter()
 const userStore = useUserStore()
 async function signInWithUser() {
-  if (userStore.email&&userStore.password) {
+  if (userStore.user.email && userStore.user.password) {
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: userStore.email,
-      password: userStore.password,
+      email: userStore.user.email,
+      password: userStore.user.password,
     })
     if (error) {
       console.error('Error signing up:', error.message)
     } else {
-      userStore.loggedIn = true
-      userStore.password = ''
+      userStore.user.loggedIn = true
+      userStore.user.password = ''
       redirect.push('/')
-  }
+    }
   }
 }
-if (userStore.loggedIn) {
+if (userStore.user.loggedIn) {
   redirect.push('/')
 }
 </script>

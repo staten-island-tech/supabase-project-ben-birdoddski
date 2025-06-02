@@ -62,73 +62,95 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+<script lang="ts">
+import { defineComponent, ref, onMounted, onBeforeUnmount } from 'vue'
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import type { CapsulePost } from '../Types/Interfaces'
+//Bens code to export default for ts stuff to work
+export default defineComponent({
+  name: 'CapsuleCarousel',
+  props: {
+    posts: {
+      type: Array as () => CapsulePost[],
+      required: true,
+    },
+  },
+  setup(props) {
+    const unlockedImage = 'https://img.icons8.com/ios-filled/100/unlock.png'
+    const lockedImage = 'https://img.icons8.com/ios-filled/100/lock.png'
 
-const unlockedImage = 'https://img.icons8.com/ios-filled/100/unlock.png'
-const lockedImage = 'https://img.icons8.com/ios-filled/100/lock.png'
+    const carousel = ref<HTMLDivElement | null>(null)
 
-const props = defineProps({ posts: Array })
+    let isDragging = false
+    let startX = 0
+    let lastX = 0
+    let animationFrame: number
+    let isTouchDevice = false
 
-const carousel = ref(null)
+    const startDrag = (e: TouchEvent | MouseEvent) => {
+      isDragging = true
+      startX = 'touches' in e ? e.touches[0].pageX : e.pageX
+      lastX = startX
+    }
 
-let isDragging = false
-let startX = 0
-let lastX = 0
-let animationFrame
-let isTouchDevice = false
+    const onDrag = (e: TouchEvent | MouseEvent) => {
+      if (!isDragging || !carousel.value) return
+      const x = 'touches' in e ? e.touches[0].pageX : e.pageX
+      const delta = lastX - x
+      lastX = x
+      animationFrame = requestAnimationFrame(() => {
+        if (carousel.value) {
+          carousel.value.scrollLeft += delta
+        }
+      })
+    }
 
-onMounted(() => {
-  isTouchDevice = 'ontouchstart' in window && window.innerWidth <= 768
+    const endDrag = () => {
+      isDragging = false
+      cancelAnimationFrame(animationFrame)
+    }
 
-  if (isTouchDevice) {
-    const el = carousel.value
-    el.addEventListener('touchstart', startDrag, { passive: false })
-    el.addEventListener('touchmove', onDrag, { passive: false })
-    el.addEventListener('touchend', endDrag)
-  } else {
-    // Desktop: only allow click-based scroll (no drag)
-    carousel.value.addEventListener('mousedown', (e) => e.preventDefault())
-  }
+    const scrollLeft = () => {
+      carousel.value?.scrollBy({ left: -300, behavior: 'smooth' })
+    }
+
+    const scrollRight = () => {
+      carousel.value?.scrollBy({ left: 300, behavior: 'smooth' })
+    }
+
+    onMounted(() => {
+      isTouchDevice = 'ontouchstart' in window && window.innerWidth <= 768
+      const el = carousel.value
+      if (!el) return
+
+      if (isTouchDevice) {
+        el.addEventListener('touchstart', startDrag, { passive: false })
+        el.addEventListener('touchmove', onDrag, { passive: false })
+        el.addEventListener('touchend', endDrag)
+      } else {
+        el.addEventListener('mousedown', (e) => e.preventDefault())
+      }
+    })
+
+    onBeforeUnmount(() => {
+      const el = carousel.value
+      if (!isTouchDevice || !el) return
+      el.removeEventListener('touchstart', startDrag)
+      el.removeEventListener('touchmove', onDrag)
+      el.removeEventListener('touchend', endDrag)
+    })
+
+    return {
+      carousel,
+      startDrag,
+      onDrag,
+      endDrag,
+      scrollLeft,
+      scrollRight,
+      unlockedImage,
+      lockedImage,
+      props,
+    }
+  },
 })
-
-onBeforeUnmount(() => {
-  if (isTouchDevice) {
-    const el = carousel.value
-    el.removeEventListener('touchstart', startDrag)
-    el.removeEventListener('touchmove', onDrag)
-    el.removeEventListener('touchend', endDrag)
-  }
-})
-
-const startDrag = (e) => {
-  isDragging = true
-  startX = e.touches ? e.touches[0].pageX : e.pageX
-  lastX = startX
-}
-
-const onDrag = (e) => {
-  if (!isDragging) return
-  const x = e.touches ? e.touches[0].pageX : e.pageX
-  const delta = lastX - x
-  lastX = x
-
-  animationFrame = requestAnimationFrame(() => {
-    carousel.value.scrollLeft += delta
-  })
-}
-
-const endDrag = () => {
-  isDragging = false
-  cancelAnimationFrame(animationFrame)
-}
-
-const scrollLeft = () => {
-  carousel.value.scrollBy({ left: -300, behavior: 'smooth' })
-}
-
-const scrollRight = () => {
-  carousel.value.scrollBy({ left: 300, behavior: 'smooth' })
-}
 </script>

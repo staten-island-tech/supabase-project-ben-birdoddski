@@ -10,7 +10,7 @@
           placeholder="Search capsules..."
           class="w-1/2 px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-400"
         />
-        <div v-if="userStore.loggedIn" class="ml-4 flex items-center space-x-4">
+        <div v-if="userStore.user.loggedIn" class="ml-4 flex items-center space-x-4">
           <RouterLink
             to="/profile"
             class="relative group rounded-full p-2 hover:bg-gray-200 transition"
@@ -27,7 +27,7 @@
         </div>
       </div>
     </header>
-    <div v-if="userStore.loggedIn" class="relative px-4 py-10 bg-gray-100 flex justify-center">
+    <div v-if="userStore.user.loggedIn" class="relative px-4 py-10 bg-gray-100 flex justify-center">
       <div class="card bg-white w-full max-w-2xl shadow-xl p-6 rounded-2xl space-y-4">
         <h1 class="text-xl font-semibold">Header:</h1>
         <input
@@ -69,7 +69,7 @@
         </div>
       </div>
     </div>
-    <div v-if="!userStore.loggedIn" class="text-center py-24 px-6">
+    <div v-if="!userStore.user.loggedIn" class="text-center py-24 px-6">
       <h1 class="text-5xl font-bold text-purple-700 mb-4">Welcome to Time Capsule</h1>
       <p class="text-lg text-gray-700 mb-8">Sign up or log in to view and create time capsules!</p>
       <div class="space-x-4">
@@ -109,7 +109,7 @@ const fileInput = ref<HTMLInputElement | null>(null)
 const viewDate = ref<string>('')
 const visible = ref<boolean>(false)
 const imagelink = ref<string | null>(null)
-
+const filePath = ref<string>('')
 async function PostMe() {
   const file = fileInput.value?.files?.[0] || null
   if (!Header.value || !BodyText.value || !viewDate.value) {
@@ -117,24 +117,38 @@ async function PostMe() {
     return
   }
   if (file) {
-    const fileName = `${userStore.username}/${Date.now()}_${file.name}` //date.now for unique ID
+    function sanitizeFilename(name: string): string {
+      return name.replace(/[^a-zA-Z0-9._-]/g, '_') //basically removes any characters that would cause supabase to freak out
+    }
+    const safeUsername = sanitizeFilename(userStore.user.username)
+    const safeFileName = sanitizeFilename(file.name)
+    const fileName = `${safeUsername}/${Date.now()}_${safeFileName}`
+    console.log(file?.type, file?.name, file?.size)
     const { error: uploadError } = await supabase.storage.from('images').upload(fileName, file)
     if (uploadError) {
       showError.value = `Upload failed: ${uploadError.message}`
       return
     }
-    imagelink.value = supabase.storage.from('images').getPublicUrl(fileName).data.publicUrl
+    const { data: signedData, error: signedError } = await supabase.storage
+      .from('images')
+      .createSignedUrl(fileName, 60 * 60 * 24)
+    if (signedError) {
+      showError.value = `Signed URL failed: ${signedError.message}`
+      return
+    }
+    filePath.value = fileName
   }
   const { error: insertError } = await supabase.from('CapsuleData').insert({
-    UsersID: userStore.userID,
+    UsersID: userStore.user.userID,
     Header: Header.value,
     Text: BodyText.value,
-    Images: imagelink.value || null,
-    Username: userStore.username,
+    Image: filePath.value,
+    Username: userStore.user.username,
     Unlock: viewDate.value,
     FriendVisibility: visible.value,
   })
   if (insertError) {
+    console.log(insertError)
     showError.value = insertError.message
   } else {
     router.push('/')
