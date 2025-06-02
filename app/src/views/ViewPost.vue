@@ -74,5 +74,5 @@ const searchQuery = ref('')
 const router = useRouter()
 //const { data, error } = await supabase.storage.from('images').createSignedUrl(filePath, 60 * 60 * 24) // 24 hours
 // const url = data?.signedUrl
-//This is for image generation, link must be generated upon use.
+//This is for image generation, link must be generated upon use
 </script>

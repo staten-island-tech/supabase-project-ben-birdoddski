@@ -145,7 +145,7 @@ async function PostMe() {
     Image: filePath.value,
     Username: userStore.user.username,
     Unlock: viewDate.value,
-    FriendVisibility: visible.value,
+    Private: visible.value,
   })
   if (insertError) {
     console.log(insertError)

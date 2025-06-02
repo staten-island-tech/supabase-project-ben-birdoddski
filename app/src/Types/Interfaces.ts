@@ -6,7 +6,7 @@ export interface LoginUser {
     loggedIn: boolean
 }
 export interface CapsulePost {
-    id: number;
+    id: string;
     title: string;
     description: string;
     isAvailable: boolean;

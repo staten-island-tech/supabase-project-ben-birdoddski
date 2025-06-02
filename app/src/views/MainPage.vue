@@ -69,6 +69,7 @@
 </template>
 
 <script lang="ts" setup>
+import {supabase} from "../lib/supabaseClient"
 import { ref, onMounted, computed } from 'vue'
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import { useUserStore } from '../stores/uservalue'
@@ -77,9 +78,23 @@ import { RouterLink } from 'vue-router'
 import CapsuleCarousel from '../components/CapsuleCarousel.vue'
 import { useRoute } from 'vue-router'
 import type { CapsulePost } from '../Types/Interfaces'
+
 const userStore = useUserStore()
 const router = useRouter()
 const searchQuery = ref('')
-
 const examplePosts: CapsulePost[] = []
+const { data, error } = await supabase.from('CapsuleDate').select()
+if (data?.length) {
+  for (let i=0; i<=data?.length;i++) {
+    let availability=ref(false)
+    let timeUntilOpen=ref()
+    //will be number, use current date and calculate to time until opened
+    if (data[0].Private=true&&(timeUntilOpen.value<0)) {
+      availability.value=true
+    }
+    let timeDisplay=ref('')
+    //make into days until open
+    examplePosts.push()
+  }
+}
 </script>
