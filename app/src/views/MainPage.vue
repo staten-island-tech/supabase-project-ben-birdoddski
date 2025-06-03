@@ -83,18 +83,26 @@ const userStore = useUserStore()
 const router = useRouter()
 const searchQuery = ref('')
 const examplePosts: CapsulePost[] = []
-const { data, error } = await supabase.from('CapsuleDate').select()
+const { data, error } = await supabase.from('CapsuleData').select()
 if (data?.length) {
+  console.log(data)
   for (let i=0; i<=data?.length;i++) {
     let availability=ref(false)
     let timeUntilOpen=ref()
+    console.log(Date.now())
     //will be number, use current date and calculate to time until opened
-    if (data[0].Private=true&&(timeUntilOpen.value<0)) {
+    if (data[i].Private=false&&(timeUntilOpen.value<0)) {
       availability.value=true
     }
     let timeDisplay=ref('')
-    //make into days until open
-    examplePosts.push()
+    //make into days, hours until open
+    let description=ref(`Unlocks on, ${data[i].Unlock}`)
+    examplePosts.push({
+      id: data[i].CapsuleID,
+      title: data[i].Header,
+      description: description.value,
+      isAvailable: availability.value,
+      countdown: timeDisplay.value,})
   }
 }
 </script>
