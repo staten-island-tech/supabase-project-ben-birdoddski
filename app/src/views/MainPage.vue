@@ -82,27 +82,31 @@ import type { CapsulePost } from '../Types/Interfaces'
 const userStore = useUserStore()
 const router = useRouter()
 const searchQuery = ref('')
-const examplePosts: CapsulePost[] = []
-const { data, error } = await supabase.from('CapsuleData').select()
-if (data?.length) {
-  console.log(data)
-  for (let i=0; i<=data?.length;i++) {
-    let availability=ref(false)
-    let timeUntilOpen=ref()
-    console.log(Date.now())
-    //will be number, use current date and calculate to time until opened
-    if (data[i].Private=false&&(timeUntilOpen.value<0)) {
-      availability.value=true
+const examplePosts = ref<CapsulePost[]>([])
+
+onMounted(async () => {
+  const { data, error } = await supabase.from('CapsuleData').select()
+  if (data?.length) {
+    console.log(data)
+    for (let i = 0; i < data.length; i++) {
+      let availability = false
+      let timeUntilOpen = Date.now() - new Date(data[i].Unlock).getTime()
+      if (!data[i].Private && timeUntilOpen < 0) {
+        availability = true
+      }
+
+      let timeDisplay = ref('')
+      let description = `Unlocks on, ${data[i].Unlock}`
+
+      examplePosts.value.push({
+        id: data[i].CapsuleID,
+        title: data[i].Header,
+        description,
+        isAvailable: availability,
+        countdown: timeDisplay.value,
+      })
     }
-    let timeDisplay=ref('')
-    //make into days, hours until open
-    let description=ref(`Unlocks on, ${data[i].Unlock}`)
-    examplePosts.push({
-      id: data[i].CapsuleID,
-      title: data[i].Header,
-      description: description.value,
-      isAvailable: availability.value,
-      countdown: timeDisplay.value,})
   }
-}
+})
+
 </script>
