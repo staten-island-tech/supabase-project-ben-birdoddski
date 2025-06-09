@@ -51,12 +51,14 @@
             {{ post.isAvailable ? 'Now Open!' : 'Opens in: ' + post.countdown }}
           </p>
         </div>
-
-        <button
-          class="mt-auto bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-full font-medium transition"
-        >
-          View Capsule
-        </button>
+        <div class="text-center">
+          <button
+            class="mt-auto bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-full font-medium transition"
+            v-if="isAvailable && timeLeft <= 0"
+          >
+            View Capsule
+          </button>
+        </div>
       </div>
     </div>
   </div>

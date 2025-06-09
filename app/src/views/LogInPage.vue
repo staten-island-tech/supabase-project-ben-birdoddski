@@ -96,7 +96,7 @@ async function signInWithUser() {
       password: userStore.user.password,
     })
     if (error) {
-      console.error('Error signing up:', error.message)
+      showError.value = error.message
     } else {
       userStore.user.loggedIn = true
       userStore.user.password = ''

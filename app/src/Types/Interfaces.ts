@@ -10,5 +10,6 @@ export interface CapsulePost {
     title: string;
     description: string;
     isAvailable: boolean;
+    timeLeft: number;
     countdown: string;
 }
