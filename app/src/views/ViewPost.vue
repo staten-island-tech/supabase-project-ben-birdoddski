@@ -45,34 +45,61 @@
         >
       </div>
     </div>
-    <div class="card bg-base-100 w-96 shadow-xl">
-      <div class="card-body items-center text-center">
-        <h2 class="card-title">Shoes!</h2>
-        <p>If a dog chews shoes whose shoes does he choose?</p>
-        <p>Date Released</p>
-      </div>
+    <div v-else-if="post" class="card bg-base-100 w-96 shadow-xl mx-auto mt-12">
       <figure class="px-10 pt-10">
         <img
-          src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
-          alt="Shoes"
-          class="rounded-xl"
+          v-if="imageUrl"
+          :src="imageUrl"
+          alt="Capsule Image"
+          class="rounded-xl max-h-64 object-cover"
         />
+        <p v-else class="italic text-gray-400 text-sm mt-4">
+          No image available or no image attaced.
+        </p>
       </figure>
+      <div class="card-body items-center text-center">
+        <h2 class="card-title text-purple-700 text-2xl">{{ post.Header }}</h2>
+        <p class="text-gray-700">{{ post.Body }}</p>
+        <p class="mt-2 text-sm text-gray-500">
+          Unlocks: {{ new Date(post.Unlock).toLocaleDateString() }}
+        </p>
+      </div>
     </div>
+    <div v-else class="text-center mt-20 text-gray-500">Loading capsule...</div>
   </div>
 </template>
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { supabase } from '../lib/supabaseClient'
-import { usePostStore } from '../stores/postvalue'
 import { useUserStore } from '../stores/uservalue'
-import { useRouter } from 'vue-router'
-import { RouterLink } from 'vue-router'
-import { ref } from 'vue'
+
 const userStore = useUserStore()
-const postStore = usePostStore()
+const route = useRoute()
 const searchQuery = ref('')
-const router = useRouter()
-//const { data, error } = await supabase.storage.from('images').createSignedUrl(filePath, 60 * 60 * 24) // 24 hours
-// const url = data?.signedUrl
-//This is for image generation, link must be generated upon use
+
+const post = ref(null)
+const imageUrl = ref<string | null>(null)
+
+onMounted(async () => {
+  const id = route.params.id
+  const { data: maindata, error: mainerror } = await supabase
+    .from('CapsuleData')
+    .select('*')
+    .eq('CapsuleID', id)
+    .single()
+  if (!mainerror) {
+    post.value = maindata
+    if (post.value?.ImagePath) {
+      const { data, error } = await supabase.storage
+        .from('images')
+        .createSignedUrl(post.value.ImagePath, 60 * 60 * 24) // 24 hours
+      if (error) {
+        console.error('Error getting signed URL:', error)
+      } else {
+        imageUrl.value = data?.signedUrl
+      }
+    }
+  }
+})
 </script>
