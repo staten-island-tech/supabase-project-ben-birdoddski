@@ -48,8 +48,8 @@
     <div v-else-if="post" class="card bg-base-100 w-96 shadow-xl mx-auto mt-12">
       <figure class="px-10 pt-10">
         <img
-          v-if="imageUrl"
-          :src="imageUrl"
+          v-if="post.imagePath"
+          :src="post.imagePath"
           alt="Capsule Image"
           class="rounded-xl max-h-64 object-cover"
         />
@@ -58,10 +58,10 @@
         </p>
       </figure>
       <div class="card-body items-center text-center">
-        <h2 class="card-title text-purple-700 text-2xl">{{ post.Header }}</h2>
-        <p class="text-gray-700">{{ post.Body }}</p>
+        <h2 class="card-title text-purple-700 text-2xl">{{ post.title }}</h2>
+        <p class="text-gray-700">{{ post.description }}</p>
         <p class="mt-2 text-sm text-gray-500">
-          Unlocks: {{ new Date(post.Unlock).toLocaleDateString() }}
+          Unlocks: {{ new Date(post.countdown).toLocaleDateString() }}
         </p>
       </div>
     </div>
@@ -72,34 +72,50 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from '../lib/supabaseClient'
-import { useUserStore } from '../stores/uservalue'
+import router from '@/router'
+import { useUserStore } from '@/stores/uservalue'
+import { CapsulePost } from '@/Types/Interfaces'
 
 const userStore = useUserStore()
 const route = useRoute()
 const searchQuery = ref('')
 
-const post = ref(null)
-const imageUrl = ref<string | null>(null)
+const post = ref<CapsulePost>({})
+
+const tempPostName = route.params.id
+
+
+const imageUrl = ref<string | undefined>()
 
 onMounted(async () => {
-  const id = route.params.id
   const { data: maindata, error: mainerror } = await supabase
     .from('CapsuleData')
     .select('*')
-    .eq('CapsuleID', id)
+    .eq('CapsuleID', tempPostName)
     .single()
   if (!mainerror) {
-    post.value = maindata
-    if (post.value?.ImagePath) {
+    //console.log(maindata)
+    if (post.value?.imagePath) {
       const { data, error } = await supabase.storage
         .from('images')
-        .createSignedUrl(post.value.ImagePath, 60 * 60 * 24) // 24 hours
+        .createSignedUrl(post.value.imagePath, 60 * 60 * 24) // 24 hours
       if (error) {
-        console.error('Error getting signed URL:', error)
+        console.log('Error getting signed URL:', error)
       } else {
+        console.log(data)
         imageUrl.value = data?.signedUrl
       }
     }
+    post.value = {
+        id: maindata.CapsuleID,
+        title: maindata.Header,
+        description: maindata.Text,
+        isAvailable: maindata.Private,
+        timeLeft: 1,
+        imagePath: imageUrl.value,
+        countdown: 'jello',
+      }
+    console.log(post)
   }
 })
 </script>

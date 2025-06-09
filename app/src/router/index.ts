@@ -41,7 +41,7 @@ const router = createRouter({
       meta: {requiresAuth: true},
     },
     {
-      path: '/viewpost/:id',
+      path: '/viewpost/:name/:id',
       name: 'ViewPost',
       component: () => import('@/views/ViewPost.vue'),
       meta: {requiresAuth: true},

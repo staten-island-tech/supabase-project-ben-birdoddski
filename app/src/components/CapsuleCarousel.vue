@@ -54,7 +54,7 @@
         <div class="text-center">
           <RouterLink
             v-if="post.isAvailable && post.timeLeft <= 0"
-            :to="`/viewpost/${post.id}`"
+            :to="`/viewpost/${post.title}/${post.id}`"
             class="mt-auto bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-full font-medium transition"
           >
             View Capsule

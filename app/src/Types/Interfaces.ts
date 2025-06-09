@@ -11,5 +11,6 @@ export interface CapsulePost {
     description: string;
     isAvailable: boolean;
     timeLeft: number;
+    imagePath: string | undefined;
     countdown: string;
 }

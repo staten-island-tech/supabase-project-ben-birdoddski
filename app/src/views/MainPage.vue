@@ -101,7 +101,6 @@ import { useRouter } from 'vue-router'
 import { RouterLink } from 'vue-router'
 import CapsuleCarousel from '../components/CapsuleCarousel.vue'
 import { useRoute } from 'vue-router'
-import NavBar from '../components/NavBar.vue'
 import type { CapsulePost } from '../Types/Interfaces'
 import NavBarVue from '../components/NavBar.vue'
 
