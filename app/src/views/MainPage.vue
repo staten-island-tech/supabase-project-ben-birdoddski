@@ -56,14 +56,6 @@
           </h1>
           <CapsuleCarousel :posts="notOpeningForAWhile" />
         </section>
-        <section class="bg-white/90 rounded-2xl shadow-xl p-3 sm:p-6">
-          <h1
-            class="font-bold text-lg sm:text-xl mb-3 sm:mb-4 flex items-center gap-2 text-gray-600"
-          >
-            Private Posts That Won't Open:
-          </h1>
-          <CapsuleCarousel :posts="privateForever" />
-        </section>
       </div>
     </div>
   </div>
@@ -85,17 +77,19 @@ const MS_IN_3_DAYS = 3 * MS_IN_DAY
 const userStore = useUserStore()
 const allPosts = ref<capsulePost[]>([])
 
-const opened = computed(() => allPosts.value.filter((p) => p.isAvailable && p.timeLeftInMs <= 0))
+const opened = computed(() =>
+  allPosts.value.filter((p) => p.isAvailable && p.timeLeftInMs <= 0 && p.display),
+)
 const openingSoon = computed(() =>
   allPosts.value.filter(
-    (p) => p.isAvailable && p.timeLeftInMs > 0 && p.timeLeftInMs <= MS_IN_3_DAYS,
+    (p) => p.isAvailable && p.timeLeftInMs > 0 && p.timeLeftInMs <= MS_IN_3_DAYS && p.display,
   ),
 )
 const notOpeningForAWhile = computed(() =>
-  allPosts.value.filter((p) => p.isAvailable && p.timeLeftInMs > MS_IN_3_DAYS),
+  allPosts.value.filter((p) => p.isAvailable && p.timeLeftInMs > MS_IN_3_DAYS && p.display),
 )
 const privateForever = computed(() =>
-  allPosts.value.filter((p) => !p.isAvailable && p.UsersID !== userStore.user.userID),
+  allPosts.value.filter((p) => !p.isAvailable && p.UsersID !== userStore.user.userID && p.display),
 )
 
 onMounted(async () => {
@@ -132,6 +126,7 @@ onMounted(async () => {
         timeLeftInMs: timeLeft,
         countdownDisplay,
         imagePath: item.ImageUrl,
+        display: item.Private ? item.UsersID === userStore.user.userID : true,
       }
     })
   }

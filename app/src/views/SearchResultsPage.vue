@@ -1,87 +1,135 @@
 <template>
-  <div class="min-h-screen bg-gray-100">
-    <navBar />
-
-    <div v-if="!userStore.user.loggedIn" class="text-center py-24 px-6">
-      <h1 class="text-5xl font-bold text-purple-700 mb-4">Welcome to Time Capsule</h1>
-      <p class="text-lg text-gray-700 mb-8">Sign up or log in to view and create time capsules!</p>
-      <div class="space-x-4">
-        <RouterLink
-          to="/signup"
-          class="bg-purple-600 hover:bg-purple-700 text-white py-2 px-5 rounded-full font-medium transition"
-          >Sign Up</RouterLink
-        >
-        <RouterLink
-          to="/login"
-          class="bg-gray-600 hover:bg-gray-700 text-white py-2 px-5 rounded-full font-medium transition"
-          >Login</RouterLink
-        >
+  <div class="min-h-screen bg-gradient-to-br from-purple-100 to-blue-100 flex flex-col">
+    <NavBar />
+    <div v-if="!userStore.user.loggedIn" class="flex-1 flex flex-col justify-center items-center">
+      <div
+        class="bg-white/80 rounded-2xl shadow-2xl p-4 sm:p-8 md:p-10 max-w-lg w-full text-center mt-8 sm:mt-16"
+      >
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-purple-700 mb-4 drop-shadow">
+          Welcome to Time Capsule
+        </h1>
+        <p class="text-base sm:text-lg text-gray-700 mb-8">
+          Sign up or log in to view and create time capsules!
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+          <RouterLink
+            to="/signup"
+            class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-2 px-6 rounded-full font-semibold shadow transition-all duration-200 w-full sm:w-auto"
+            >Sign Up</RouterLink
+          >
+          <RouterLink
+            to="/login"
+            class="bg-gray-600 hover:bg-gray-700 text-white py-2 px-6 rounded-full font-semibold shadow transition-all duration-200 w-full sm:w-auto"
+            >Login</RouterLink
+          >
+        </div>
       </div>
     </div>
-
-    <div v-else class="relative px-4 py-10 bg-gray-100">
-      <h2 class="text-3xl font-bold mb-6 text-center">Search Results</h2>
+    <div v-if="userStore.user.loggedIn" class="flex-1 px-2 sm:px-4 py-6 sm:py-10 bg-transparent">
+      <h2
+        class="text-2xl sm:text-4xl font-extrabold mb-6 sm:mb-10 text-center text-purple-700 drop-shadow"
+      >
+        Explore Time Capsules
+      </h2>
       <p class="text-lg text-gray-700 mb-6 text-center">
         Showing results for <span class="font-semibold">{{ searchTerm }}</span>
       </p>
-
-      <h1 class="font-bold text-lg p-3 bg-slate-500 w-fit underline">Opened!</h1>
-      <CapsuleCarousel :posts="opened" />
-
-      <h1 class="font-bold text-lg p-3 bg-slate-500 w-fit underline">Opening Soon:</h1>
-      <CapsuleCarousel :posts="openingSoon" />
-
-      <h1 class="font-bold text-lg p-3 bg-slate-500 w-fit underline">Not Opening For A While:</h1>
-      <CapsuleCarousel :posts="notOpeningForAWhile" />
-
-      <h1 class="font-bold text-lg p-3 bg-slate-500 w-fit underline">
-        Private Posts That Won't Open:
-      </h1>
-      <CapsuleCarousel :posts="privateForever" />
+      <div class="space-y-6 sm:space-y-10 max-w-full sm:max-w-5xl mx-auto">
+        <section class="bg-white/90 rounded-2xl shadow-xl p-3 sm:p-6">
+          <h1
+            class="font-bold text-lg sm:text-xl mb-3 sm:mb-4 flex items-center gap-2 text-purple-700"
+          >
+            Opened!
+          </h1>
+          <CapsuleCarousel :posts="opened" />
+        </section>
+        <section class="bg-white/90 rounded-2xl shadow-xl p-3 sm:p-6">
+          <h1
+            class="font-bold text-lg sm:text-xl mb-3 sm:mb-4 flex items-center gap-2 text-pink-600"
+          >
+            Opening Soon:
+          </h1>
+          <CapsuleCarousel :posts="openingSoon" />
+        </section>
+        <section class="bg-white/90 rounded-2xl shadow-xl p-3 sm:p-6">
+          <h1
+            class="font-bold text-lg sm:text-xl mb-3 sm:mb-4 flex items-center gap-2 text-blue-600"
+          >
+            Not Opening For A While:
+          </h1>
+          <CapsuleCarousel :posts="notOpeningForAWhile" />
+        </section>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, onMounted, computed, watch } from 'vue'
 import { supabase } from '../lib/supabaseClient'
 import { useUserStore } from '../stores/uservalue'
-import navBar from '../components/NavBar.vue'
+import { RouterLink, useRoute } from 'vue-router'
 import CapsuleCarousel from '../components/CapsuleCarousel.vue'
+import NavBar from '../components/NavBar.vue'
 import type { capsulePost } from '../Types/Interfaces'
 import type { capsuleDataPull } from '../Types/Interfaces'
 
-const userStore = useUserStore()
 const route = useRoute()
-const searchTerm = (route.params.term as string) || ''
+const searchTerm = ref((route.params.term as string) || '')
+
+const MS_IN_DAY = 24 * 60 * 60 * 1000
+const MS_IN_3_DAYS = 3 * MS_IN_DAY
+
+const userStore = useUserStore()
 const allPosts = ref<capsulePost[]>([])
+
+const opened = computed(() =>
+  allPosts.value.filter((p) => p.isAvailable && p.timeLeftInMs <= 0 && p.display),
+)
+const openingSoon = computed(() =>
+  allPosts.value.filter(
+    (p) => p.isAvailable && p.timeLeftInMs > 0 && p.timeLeftInMs <= MS_IN_3_DAYS && p.display,
+  ),
+)
+const notOpeningForAWhile = computed(() =>
+  allPosts.value.filter((p) => p.isAvailable && p.timeLeftInMs > MS_IN_3_DAYS && p.display),
+)
+const privateForever = computed(() =>
+  allPosts.value.filter((p) => !p.isAvailable && p.UsersID !== userStore.user.userID && p.display),
+)
+
+function filterPosts() {
+  allPosts.value = allPosts.value.filter((p) =>
+    p.title.toLowerCase().includes(searchTerm.value.toLowerCase()),
+  )
+}
 
 onMounted(async () => {
   const { data, error } = await supabase
     .from<'CapsuleData', capsuleDataPull>('CapsuleData')
     .select()
 
-  if (data && !error) {
-    data.forEach((item) => {
+  if (data?.length) {
+    allPosts.value = data.map((item) => {
       const unlockDate = new Date(item.Unlock)
       unlockDate.setHours(0, 0, 0, 0)
       const now = new Date()
       const timeLeft = unlockDate.getTime() - now.getTime()
       const isAvailable = timeLeft <= 0 || !item.Private
-
-      const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24))
-      const hours = Math.floor((timeLeft / (1000 * 60 * 60)) % 24)
       let countdownDisplay = ''
-      if (!isAvailable) {
-        countdownDisplay = `${days}D, ${hours} Hrs`
+      if (timeLeft <= 0) {
+        countdownDisplay = '0 days, 0 hours'
+      } else {
+        countdownDisplay =
+          Math.floor(timeLeft / MS_IN_DAY) +
+          'D, ' +
+          Math.floor((timeLeft / (1000 * 60 * 60)) % 24) +
+          ' Hrs'
       }
-
       const month = unlockDate.getMonth() + 1
       const day = unlockDate.getDate()
       const year = unlockDate.getFullYear()
-
-      allPosts.value.push({
+      return {
         id: item.CapsuleID,
         UsersID: item.UsersID,
         title: item.Header,
@@ -90,30 +138,54 @@ onMounted(async () => {
         timeLeftInMs: timeLeft,
         countdownDisplay,
         imagePath: item.ImageUrl,
-      })
+        display: item.Private ? item.UsersID === userStore.user.userID : true,
+      }
     })
+    filterPosts()
   }
 })
 
-const filteredPosts = computed(() =>
-  allPosts.value.filter((p) => p.title.toLowerCase().includes(searchTerm.toLowerCase())),
-)
-
-const opened = computed(() =>
-  filteredPosts.value.filter((p) => p.isAvailable && p.timeLeftInMs <= 0),
-)
-
-const openingSoon = computed(() =>
-  filteredPosts.value.filter(
-    (p) => p.isAvailable && p.timeLeftInMs > 0 && p.timeLeftInMs <= 3 * 24 * 60 * 60 * 1000,
-  ),
-)
-
-const notOpeningForAWhile = computed(() =>
-  filteredPosts.value.filter((p) => p.isAvailable && p.timeLeftInMs > 3 * 24 * 60 * 60 * 1000),
-)
-
-const privateForever = computed(() =>
-  filteredPosts.value.filter((p) => !p.isAvailable && p.UsersID !== userStore.user.userID),
+watch(
+  () => route.params.term,
+  async (newTerm) => {
+    searchTerm.value = newTerm as string
+    const { data, error } = await supabase
+      .from<'CapsuleData', capsuleDataPull>('CapsuleData')
+      .select()
+    if (data?.length) {
+      allPosts.value = data.map((item) => {
+        const unlockDate = new Date(item.Unlock)
+        unlockDate.setHours(0, 0, 0, 0)
+        const now = new Date()
+        const timeLeft = unlockDate.getTime() - now.getTime()
+        const isAvailable = timeLeft <= 0 || !item.Private
+        let countdownDisplay = ''
+        if (timeLeft <= 0) {
+          countdownDisplay = '0 days, 0 hours'
+        } else {
+          countdownDisplay =
+            Math.floor(timeLeft / MS_IN_DAY) +
+            'D, ' +
+            Math.floor((timeLeft / (1000 * 60 * 60)) % 24) +
+            ' Hrs'
+        }
+        const month = unlockDate.getMonth() + 1
+        const day = unlockDate.getDate()
+        const year = unlockDate.getFullYear()
+        return {
+          id: item.CapsuleID,
+          UsersID: item.UsersID,
+          title: item.Header,
+          description: `Unlocks on ${month}/${day}/${year}`,
+          isAvailable,
+          timeLeftInMs: timeLeft,
+          countdownDisplay,
+          imagePath: item.ImageUrl,
+          display: item.Private ? item.UsersID === userStore.user.userID : true,
+        }
+      })
+      filterPosts()
+    }
+  },
 )
 </script>

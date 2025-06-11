@@ -29,8 +29,11 @@
     <div v-else-if="error" class="flex-1 flex items-center justify-center">
       <div class="text-2xl text-red-500 font-semibold">{{ error }}</div>
     </div>
-    <div v-else-if="post && isAvailable" class="flex-1 flex flex-col items-center justify-center">
-      <div class="bg-white/90 rounded-3xl shadow-2xl w-full max-w-2xl mx-auto mt-12 p-8 relative">
+    <div
+      v-else-if="post && isAvailable && post.display"
+      class="flex-1 flex flex-col items-center justify-cente"
+    >
+      <div class="bg-white/90 rounded-3xl shadow-2xl w-3/4 mx-auto mt-12 p-8 relative">
         <figure class="flex flex-col items-center">
           <img
             v-if="imageUrl"
@@ -62,7 +65,19 @@
           >
             Edit Post
           </button>
+          <button
+            v-if="ownsProfile"
+            @click="showDeleteConfirm = true"
+            class="ml-4 mt-2 btn btn-outline btn-sm text-red-600 border-red-400 hover:bg-red-100 hover:border-red-600 transition"
+          >
+            Delete Post
+          </button>
         </div>
+      </div>
+    </div>
+    <div v-else-if="post && !post.display" class="flex-1 flex items-center justify-center">
+      <div class="text-2xl text-gray-500 font-semibold">
+        You dont have permission to view this capsule.
       </div>
     </div>
     <div v-else class="flex-1 flex items-center justify-center">
@@ -104,7 +119,36 @@
         <div v-if="editError" class="text-red-500 mt-2 text-center">{{ editError }}</div>
       </div>
     </div>
-    <div class="max-w-2xl mx-auto mt-10 mb-10 bg-white/90 rounded-2xl shadow-xl p-8">
+    <div
+      v-if="showDeleteConfirm"
+      class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+    >
+      <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative">
+        <h2 class="text-xl font-bold mb-4 text-red-600">Delete Capsule</h2>
+        <p class="mb-6 text-gray-700">
+          Are you sure you want to delete this capsule? This action cannot be undone.
+        </p>
+        <div class="flex justify-end gap-2">
+          <button
+            @click="showDeleteConfirm = false"
+            class="btn btn-ghost px-6 py-2 rounded-full font-semibold"
+          >
+            Cancel
+          </button>
+          <button
+            @click="deletePost"
+            class="btn btn-danger bg-gradient-to-r from-red-500 to-pink-500 border-0 text-white px-6 py-2 rounded-full font-semibold shadow hover:from-red-600 hover:to-pink-600 transition"
+          >
+            Delete
+          </button>
+        </div>
+        <div v-if="deleteError" class="text-red-500 mt-2 text-center">{{ deleteError }}</div>
+      </div>
+    </div>
+    <div
+      class="w-3/4 mx-auto mt-10 mb-10 bg-white/90 rounded-2xl shadow-xl p-8"
+      v-if="post && post.display && isAvailable"
+    >
       <h2 class="text-2xl font-bold mb-4 text-purple-700 flex items-center">Comments</h2>
       <div v-if="commentsLoading" class="text-gray-500 mb-2">Loading comments...</div>
       <div v-else-if="commentsError" class="text-red-500 mb-2">{{ commentsError }}</div>
@@ -116,12 +160,22 @@
           <li
             v-for="(comment, idx) in comments"
             :key="idx"
-            class="mb-4 pb-3 border-b border-gray-200"
+            class="mb-4 pb-3 border-b border-gray-200 group relative"
           >
             <div class="flex items-center mb-1">
               <span class="font-semibold text-purple-700 mr-2">{{ comment.username }}</span>
+              <button
+                v-if="userStore.user.username === comment.username || ownsProfile"
+                @click="confirmDeleteComment(idx)"
+                class="ml-2 text-xs text-red-500 hover:underline opacity-70 group-hover:opacity-100 transition"
+              >
+                Delete
+              </button>
             </div>
-            <div class="text-gray-800 bg-purple-50 rounded px-3 py-2">{{ comment.text }}</div>
+            <div class="text-gray-800 bg-purple-50 rounded px-3 py-2">
+              {{ comment.text }}
+              <span class="text-gray-400">{{ comment.created_at.slice(0, 10) }}</span>
+            </div>
           </li>
         </ul>
       </div>
@@ -145,11 +199,37 @@
       </div>
       <div v-else class="text-gray-500 mt-2 text-sm">Log in to add a comment.</div>
     </div>
+    <div
+      v-if="showDeleteCommentConfirm"
+      class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+    >
+      <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative">
+        <h2 class="text-xl font-bold mb-4 text-red-600">Delete Comment</h2>
+        <p class="mb-6 text-gray-700">Are you sure you want to delete this comment?</p>
+        <div class="flex justify-end gap-2">
+          <button
+            @click="showDeleteCommentConfirm = false"
+            class="btn btn-ghost px-6 py-2 rounded-full font-semibold"
+          >
+            Cancel
+          </button>
+          <button
+            @click="deleteComment"
+            class="btn btn-danger bg-gradient-to-r from-red-500 to-pink-500 border-0 text-white px-6 py-2 rounded-full font-semibold shadow hover:from-red-600 hover:to-pink-600 transition"
+          >
+            Delete
+          </button>
+        </div>
+        <div v-if="deleteCommentError" class="text-red-500 mt-2 text-center">
+          {{ deleteCommentError }}
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { supabase } from '../lib/supabaseClient'
 import { useUserStore } from '../stores/uservalue'
 import NavBar from '../components/NavBar.vue'
@@ -157,6 +237,7 @@ import type { capsulePost } from '../Types/Interfaces'
 
 const userStore = useUserStore()
 const route = useRoute()
+const router = useRouter()
 const post = ref<capsulePost>()
 const tempPostName = route.params.id
 const imageUrl = ref<string | undefined>()
@@ -207,6 +288,7 @@ onMounted(async () => {
       timeLeftInMs: 1,
       imagePath: maindata.ImageUrl,
       countdownDisplay: 'jello',
+      display: maindata.Private ? maindata.UsersID === userStore.user.userID : true,
     }
     const { data: postCreator, error: creatorError } = await supabase
       .from('Users')
@@ -308,6 +390,7 @@ async function addComment() {
       .select('Comments')
       .eq('CapsuleID', tempPostName)
       .single()
+    //console.log(data, fetchError)
     let currentComments: Array<{ username: string; text: string; created_at: string }> = []
     if (!fetchError && data && data.Comments) {
       try {
@@ -336,6 +419,57 @@ async function addComment() {
     addCommentError.value = 'An unexpected error occurred.'
   } finally {
     addingComment.value = false
+  }
+}
+
+const showDeleteConfirm = ref(false)
+const deleteError = ref('')
+
+async function deletePost() {
+  if (!post.value) return
+  deleteError.value = ''
+  try {
+    const { error } = await supabase.from('CapsuleData').delete().eq('CapsuleID', post.value.id)
+    if (error) {
+      deleteError.value = error.message
+    } else {
+      showDeleteConfirm.value = false
+      router.push('/')
+    }
+  } catch (e) {
+    deleteError.value = 'An unexpected error occurred.'
+  }
+}
+
+const showDeleteCommentConfirm = ref(false)
+const commentToDeleteIdx = ref<number | null>(null)
+const deleteCommentError = ref('')
+
+function confirmDeleteComment(idx: number) {
+  commentToDeleteIdx.value = idx
+  showDeleteCommentConfirm.value = true
+  deleteCommentError.value = ''
+}
+
+async function deleteComment() {
+  if (commentToDeleteIdx.value === null || !post.value) return
+  deleteCommentError.value = ''
+  try {
+    const updatedComments = comments.value.slice()
+    updatedComments.splice(commentToDeleteIdx.value, 1)
+    const { error } = await supabase
+      .from('CapsuleData')
+      .update({ Comments: JSON.stringify(updatedComments) })
+      .eq('CapsuleID', post.value.id)
+    if (error) {
+      deleteCommentError.value = error.message
+    } else {
+      comments.value = updatedComments
+      showDeleteCommentConfirm.value = false
+      commentToDeleteIdx.value = null
+    }
+  } catch (e) {
+    deleteCommentError.value = 'An unexpected error occurred.'
   }
 }
 

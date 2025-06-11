@@ -15,6 +15,7 @@ export interface capsulePost {
   timeLeftInMs: number
   imagePath: string | undefined
   countdownDisplay: string
+  display: boolean
 }
 
 export interface capsuleDataPull {

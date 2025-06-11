@@ -6,8 +6,8 @@
       <input
         type="text"
         v-if="userStore.user.loggedIn"
-        @keyup.enter="router.push('/search/' + searchQuery)"
-        v-model="searchQuery"
+        @keyup.enter="searchQuery && searchQuery.trim() && router.push('/search/' + searchQuery)"
+        v-model="searchStore.searchQuery"
         placeholder="Search capsules..."
         class="w-1/2 px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-400"
       />
@@ -50,14 +50,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
 import { useUserStore } from '../stores/uservalue'
 import { supabase } from '../lib/supabaseClient'
+import { useSearchStore } from '../stores/searchvalue'
 
 const router = useRouter()
 const userStore = useUserStore()
-const searchQuery = ref('')
+const searchStore = useSearchStore()
+const searchQuery = computed(() => searchStore.searchQuery)
 
 const profileData = ref<{ Username?: string } | null>(null)
 
