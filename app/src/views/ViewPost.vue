@@ -286,7 +286,7 @@ onMounted(async () => {
       description: maindata.Text,
       isAvailable: available,
       timeLeftInMs: 1,
-      imagePath: maindata.ImageUrl,
+      imagePath: maindata.Image,
       countdownDisplay: 'jello',
       display: maindata.Private ? maindata.UsersID === userStore.user.userID : true,
     }

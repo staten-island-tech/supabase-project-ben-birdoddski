@@ -1,6 +1,6 @@
 <template>
   <header class="bg-white shadow sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+    <div class="max-w-7xl mx-auto px-0 py-4 flex items-center justify-between">
       <RouterLink to="/" class="text-2xl font-bold text-purple-600">Time Capsule</RouterLink>
 
       <input
@@ -18,6 +18,14 @@
           class="bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-full font-medium transition"
         >
           Create Post
+        </RouterLink>
+
+        <!-- New button for the graph page -->
+        <RouterLink
+          to="/postsgraph"
+          class="bg-purple-400 hover:bg-purple-500 text-white py-2 px-4 rounded-full font-medium transition"
+        >
+          Unlock Graph
         </RouterLink>
 
         <RouterLink
