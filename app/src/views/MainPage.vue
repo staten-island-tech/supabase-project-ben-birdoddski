@@ -93,9 +93,7 @@ const privateForever = computed(() =>
 )
 
 onMounted(async () => {
-  const { data, error } = await supabase
-    .from<'CapsuleData', capsuleDataPull>('CapsuleData')
-    .select()
+  const { data, error } = await supabase.from('CapsuleData').select('*, Users:UsersID (Username)')
 
   if (data?.length) {
     allPosts.value = data.map((item) => {
@@ -117,6 +115,7 @@ onMounted(async () => {
       const month = unlockDate.getMonth() + 1
       const day = unlockDate.getDate()
       const year = unlockDate.getFullYear()
+
       return {
         id: item.CapsuleID,
         UsersID: item.UsersID,
@@ -127,6 +126,7 @@ onMounted(async () => {
         countdownDisplay,
         imagePath: item.ImageUrl,
         display: item.Private ? item.UsersID === userStore.user.userID : true,
+        author: item.Users?.Username || '',
       }
     })
   }

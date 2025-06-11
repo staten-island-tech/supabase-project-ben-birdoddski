@@ -265,7 +265,7 @@ onMounted(async () => {
       .select('*')
       .eq('CapsuleID', tempPostName)
       .single()
-
+    //console.log(maindata, mainerror)
     if (mainerror || !maindata) {
       error.value = 'Capsule not found.'
       loading.value = false

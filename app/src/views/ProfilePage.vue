@@ -104,7 +104,7 @@
           class="bg-white bg-opacity-70 backdrop-blur-md rounded-2xl shadow-md hover:shadow-xl transition p-6 flex flex-col items-center text-center"
         >
           <img
-            :src="post.isAvailable ? unlockedImage : lockedImage"
+            :src="post.isAvailable && post.timeLeftInMs <= 0 ? unlockedImage : lockedImage"
             alt="Capsule"
             class="w-24 h-24 mb-4 rounded-full border"
           />
@@ -134,7 +134,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from '../lib/supabaseClient'
 import { useUserStore } from '../stores/uservalue'
@@ -294,4 +294,13 @@ function makeCountdown(timeLeftInMs: number | undefined) {
   const hours = Math.floor((timeLeftInMs / (1000 * 60 * 60)) % 24)
   return `${days}D, ${hours} Hrs`
 }
+
+watch(
+  () => route.params.id,
+  async (newId, oldId) => {
+    if (newId !== oldId) {
+      window.location.reload()
+    }
+  },
+)
 </script>
