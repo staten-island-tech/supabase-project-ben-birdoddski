@@ -20,7 +20,12 @@
       <ChevronRight class="w-6 h-6 text-purple-600" />
     </button>
 
+    <div v-if="posts.length === 0" class="py-10 text-center text-gray-500 font-medium text-lg">
+      No capsules found in this category.
+    </div>
+
     <div
+      v-else
       ref="carousel"
       class="flex gap-6 overflow-x-auto scroll-smooth px-2 py-4 select-none"
       @mousedown="startDrag"
@@ -38,7 +43,7 @@
       >
         <div class="flex flex-col items-center text-center mb-4">
           <img
-            :src="post.isAvailable ? unlockedImage : lockedImage"
+            :src="post.isAvailable && post.timeLeftInMs <= 0 ? unlockedImage : lockedImage"
             alt="Capsule"
             class="w-20 h-20 mb-3 rounded-full border"
           />
@@ -46,55 +51,64 @@
           <p class="text-sm text-gray-600 mt-1">{{ post.description }}</p>
           <p
             class="text-sm mt-2 font-medium"
-            :class="post.isAvailable ? 'text-green-600' : 'text-red-500'"
+            :class="post.isAvailable && post.timeLeftInMs <= 0 ? 'text-green-600' : 'text-red-500'"
           >
-            {{ post.isAvailable ? 'Now Open!' : 'Opens in: ' + post.countdown }}
+            {{
+              post.isAvailable && post.timeLeftInMs <= 0
+                ? 'Now Open!'
+                : 'Opens in: ' + post.countdownDisplay
+            }}
           </p>
         </div>
-
-        <button
-          class="mt-auto bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-full font-medium transition"
-        >
-          View Capsule
-        </button>
+        <div class="text-center">
+          <RouterLink
+            v-if="post.isAvailable && post.timeLeftInMs <= 0"
+            :to="`/viewpost/${post.title}/${post.id}`"
+            class="mt-auto bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-full font-medium transition"
+          >
+            View Capsule
+          </RouterLink>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { RouterLink } from 'vue-router'
+import type { capsulePost } from '../Types/Interfaces'
+
+const props = defineProps<{
+  posts: capsulePost[]
+}>()
 
 const unlockedImage = 'https://img.icons8.com/ios-filled/100/unlock.png'
 const lockedImage = 'https://img.icons8.com/ios-filled/100/lock.png'
 
-const props = defineProps({ posts: Array })
-
-const carousel = ref(null)
+const carousel = ref<HTMLElement | null>(null)
 
 let isDragging = false
 let startX = 0
 let lastX = 0
-let animationFrame
+let animationFrame = 0
 let isTouchDevice = false
 
 onMounted(() => {
   isTouchDevice = 'ontouchstart' in window && window.innerWidth <= 768
-
-  if (isTouchDevice) {
+  if (isTouchDevice && carousel.value) {
     const el = carousel.value
     el.addEventListener('touchstart', startDrag, { passive: false })
     el.addEventListener('touchmove', onDrag, { passive: false })
     el.addEventListener('touchend', endDrag)
-  } else {
-    // Desktop: only allow click-based scroll (no drag)
+  } else if (carousel.value) {
     carousel.value.addEventListener('mousedown', (e) => e.preventDefault())
   }
 })
 
 onBeforeUnmount(() => {
-  if (isTouchDevice) {
+  if (isTouchDevice && carousel.value) {
     const el = carousel.value
     el.removeEventListener('touchstart', startDrag)
     el.removeEventListener('touchmove', onDrag)
@@ -102,20 +116,20 @@ onBeforeUnmount(() => {
   }
 })
 
-const startDrag = (e) => {
+const startDrag = (e: MouseEvent | TouchEvent) => {
   isDragging = true
-  startX = e.touches ? e.touches[0].pageX : e.pageX
+  startX = 'touches' in e ? e.touches[0].pageX : e.pageX
   lastX = startX
 }
 
-const onDrag = (e) => {
-  if (!isDragging) return
-  const x = e.touches ? e.touches[0].pageX : e.pageX
+const onDrag = (e: MouseEvent | TouchEvent) => {
+  if (!isDragging || !carousel.value) return
+  const x = 'touches' in e ? e.touches[0].pageX : e.pageX
   const delta = lastX - x
   lastX = x
 
   animationFrame = requestAnimationFrame(() => {
-    carousel.value.scrollLeft += delta
+    carousel.value!.scrollLeft += delta
   })
 }
 
@@ -125,10 +139,14 @@ const endDrag = () => {
 }
 
 const scrollLeft = () => {
-  carousel.value.scrollBy({ left: -300, behavior: 'smooth' })
+  if (carousel.value) {
+    carousel.value.scrollBy({ left: -300, behavior: 'smooth' })
+  }
 }
 
 const scrollRight = () => {
-  carousel.value.scrollBy({ left: 300, behavior: 'smooth' })
+  if (carousel.value) {
+    carousel.value.scrollBy({ left: 300, behavior: 'smooth' })
+  }
 }
 </script>
