@@ -110,7 +110,7 @@
             }}
           </p>
           <button
-            v-if="post.timeLeftInMs <= 0 && (ownsProfile || !post.isAvailable)"
+            v-if="post.timeLeftInMs <= 0 && (ownsProfile || post.isAvailable)"
             @click="$router.push(`/viewpost/${post.title}/${post.id}`)"
             class="mt-auto bg-purple-600 hover:bg-purple-700 text-white py-2 px-6 rounded-full font-medium transition"
           >
