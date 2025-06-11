@@ -98,7 +98,6 @@ async function PostMe() {
     const safeUsername = sanitizeFilename(userStore.user.username)
     const safeFileName = sanitizeFilename(file.name)
     const fileName = `${safeUsername}/${Date.now()}_${safeFileName}`
-    //console.log(file?.type, file?.name, file?.size)
     const { error: uploadError } = await supabase.storage.from('images').upload(fileName, file)
     if (uploadError) {
       showError.value = `Upload failed: ${uploadError.message}`

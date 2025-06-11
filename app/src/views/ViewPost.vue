@@ -390,7 +390,9 @@ async function addComment() {
       .select('Comments')
       .eq('CapsuleID', tempPostName)
       .single()
-    //console.log(data, fetchError)
+    if (fetchError) {
+      return fetchError
+    }
     let currentComments: Array<{ username: string; text: string; created_at: string }> = []
     if (!fetchError && data && data.Comments) {
       try {
