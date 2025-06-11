@@ -31,10 +31,11 @@ export const useUserStore = defineStore(
           .eq('id', supabaseUser.id)
           .single()
 
-        if (!error && data && router.currentRoute.value.path === '/login') {
+        if (!error && data) {
           user.value.username = data.Username || ''
-
-          router.push('/')
+          if (router.currentRoute.value.path === '/login') {
+            router.push('/')
+          }
         }
       } else {
         clearUser()
@@ -51,10 +52,30 @@ export const useUserStore = defineStore(
       }
     }
 
+    async function initializeUser() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+      if (session?.user) {
+        await setUser(session.user)
+      } else {
+        clearUser()
+      }
+    }
+
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        setUser(session.user)
+      } else if (event === 'SIGNED_OUT') {
+        clearUser()
+      }
+    })
+
     return {
       user,
       setUser,
       clearUser,
+      initializeUser,
     }
   },
   {
