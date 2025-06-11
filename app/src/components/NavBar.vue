@@ -20,7 +20,6 @@
           Create Post
         </RouterLink>
 
-        <!-- New button for the graph page -->
         <RouterLink
           to="/postsgraph"
           class="bg-purple-400 hover:bg-purple-500 text-white py-2 px-4 rounded-full font-medium transition"
