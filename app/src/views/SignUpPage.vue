@@ -70,7 +70,7 @@
 import { ref } from 'vue'
 import { supabase } from '../lib/supabaseClient'
 import { useUserStore } from '../stores/uservalue'
-import navBar from '../components/navBar.vue'
+import navBar from '../components/NavBar.vue'
 
 const userStore = useUserStore()
 const showError = ref<string>()

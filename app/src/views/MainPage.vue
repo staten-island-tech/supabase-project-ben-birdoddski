@@ -63,7 +63,7 @@ import { supabase } from '../lib/supabaseClient'
 import { useUserStore } from '../stores/uservalue'
 import { RouterLink } from 'vue-router'
 import CapsuleCarousel from '../components/CapsuleCarousel.vue'
-import navBar from '../components/navBar.vue'
+import navBar from '../components/NavBar.vue'
 import type { capsulePost } from '../Types/Interfaces'
 import type { capsuleDataPull } from '../Types/Interfaces'
 

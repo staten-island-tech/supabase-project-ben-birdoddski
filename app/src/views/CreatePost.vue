@@ -71,7 +71,7 @@ import { useUserStore } from '../stores/uservalue'
 import { useRouter } from 'vue-router'
 import { nanoid } from 'nanoid'
 import { Users } from 'lucide-vue-next'
-import navBar from '../components/navBar.vue'
+import navBar from '../components/NavBar.vue'
 
 const userStore = useUserStore()
 const router = useRouter()

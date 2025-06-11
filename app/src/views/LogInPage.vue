@@ -54,7 +54,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '../lib/supabaseClient'
 import { useUserStore } from '../stores/uservalue'
-import navBar from '../components/navBar.vue'
+import navBar from '../components/NavBar.vue'
 const showError = ref<string>('')
 const redirect = useRouter()
 const userStore = useUserStore()

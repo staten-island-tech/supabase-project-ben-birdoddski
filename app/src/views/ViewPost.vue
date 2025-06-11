@@ -53,8 +53,8 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from '../lib/supabaseClient'
 import { useUserStore } from '../stores/uservalue'
-import { capsulePost } from '../Types/Interfaces'
-import navBar from '../components/navBar.vue'
+import type { capsulePost } from '../Types/Interfaces'
+import navBar from '../components/NavBar.vue'
 
 const userStore = useUserStore()
 const route = useRoute()

@@ -127,8 +127,9 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from '../lib/supabaseClient'
 import { useUserStore } from '../stores/uservalue'
-import navBar from '../components/navBar.vue'
-import type { UserProfile, capsulePost } from '../Types/Interfaces'
+import navBar from '../components/NavBar.vue'
+import type { UserProfile } from '../Types/Interfaces'
+import type { capsulePost } from '../Types/Interfaces'
 
 const route = useRoute()
 const userStore = useUserStore()
