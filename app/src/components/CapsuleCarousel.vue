@@ -48,6 +48,7 @@
             class="w-20 h-20 mb-3 rounded-full border"
           />
           <h3 class="text-lg font-semibold text-gray-800">{{ post.title }}</h3>
+          <p class="text-sm text-gray-500 mt-1">by {{ post.author }}</p>
           <p class="text-sm text-gray-600 mt-1">{{ post.description }}</p>
           <p
             class="text-sm mt-2 font-medium"
@@ -78,7 +79,9 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import { RouterLink } from 'vue-router'
-import type { capsulePost } from '../Types/Interfaces'
+import type { capsulePost as CapsulePostBase } from '../Types/Interfaces'
+type capsulePost = CapsulePostBase & { author?: string }
+import { supabase } from '../lib/supabaseClient'
 
 const props = defineProps<{
   posts: capsulePost[]
