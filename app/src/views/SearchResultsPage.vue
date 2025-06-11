@@ -1,34 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-100">
-    <header class="bg-white shadow sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <RouterLink to="/" class="text-2xl font-bold text-purple-600">Time Capsule</RouterLink>
-
-        <input
-          type="text"
-          @keyup.enter="router.push('/search/' + searchQuery)"
-          v-model="searchQuery"
-          placeholder="Search capsules..."
-          class="w-1/2 px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-400"
-        />
-
-        <div v-if="userStore.user.loggedIn" class="ml-4 flex items-center space-x-4">
-          <RouterLink
-            to="/profile"
-            class="relative group rounded-full p-2 hover:bg-gray-200 transition"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-8 w-8 text-purple-600 hover:text-purple-800 transition"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm-7 8a7 7 0 0114 0H3z" />
-            </svg>
-          </RouterLink>
-        </div>
-      </div>
-    </header>
+    <navBar />
 
     <div v-if="!userStore.user.loggedIn" class="text-center py-24 px-6">
       <h1 class="text-5xl font-bold text-purple-700 mb-4">Welcome to Time Capsule</h1>
@@ -46,151 +18,101 @@
         >
       </div>
     </div>
-    <div class="relative px-4 py-10 bg-gray-100">
-      <h2 class="text-3xl font-bold mb-6 text-center">Explore Time Capsules</h2>
+
+    <div v-else class="relative px-4 py-10 bg-gray-100">
+      <h2 class="text-3xl font-bold mb-6 text-center">Search Results</h2>
       <p class="text-lg text-gray-700 mb-6 text-center">
-        Showing results for <span class="font-semibold">{{ $route.params.term }}</span
-        >.
+        Showing results for <span class="font-semibold">{{ searchTerm }}</span>
       </p>
-      <h1 class="font-bold text-lg p-3 bg-slate-500 w-fit underline">Opening Soon</h1>
-      <CapsuleCarousel :posts="examplePosts.filter((p) => p.countdown && !p.isAvailable)" />
 
       <h1 class="font-bold text-lg p-3 bg-slate-500 w-fit underline">Opened!</h1>
-      <CapsuleCarousel :posts="examplePosts.filter((p) => p.isAvailable)" />
+      <CapsuleCarousel :posts="opened" />
+
+      <h1 class="font-bold text-lg p-3 bg-slate-500 w-fit underline">Opening Soon:</h1>
+      <CapsuleCarousel :posts="openingSoon" />
+
+      <h1 class="font-bold text-lg p-3 bg-slate-500 w-fit underline">Not Opening For A While:</h1>
+      <CapsuleCarousel :posts="notOpeningForAWhile" />
 
       <h1 class="font-bold text-lg p-3 bg-slate-500 w-fit underline">
-        Staying locked for a while...
+        Private Posts That Won't Open:
       </h1>
-      <CapsuleCarousel :posts="examplePosts.filter((p) => !p.countdown)" />
+      <CapsuleCarousel :posts="privateForever" />
     </div>
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, computed } from 'vue'
-import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
-import { useUserStore } from '../stores/uservalue'
-import { useRouter } from 'vue-router'
-import { RouterLink } from 'vue-router'
-import CapsuleCarousel from '../components/CapsuleCarousel.vue'
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { supabase } from '../lib/supabaseClient'
+import { useUserStore } from '../stores/uservalue'
+import navBar from '../components/navBar.vue'
+import CapsuleCarousel from '../components/CapsuleCarousel.vue'
+import type { capsulePost, capsuleDataPull } from '../Types/Interfaces'
 
 const userStore = useUserStore()
-const router = useRouter()
-const searchQuery = ref('')
-//make into a component for simplicity
-const examplePosts = [
-  {
-    id: 1,
-    title: 'Graduation',
-    description: 'Your graduation day photos',
-    isAvailable: true,
-    countdown: '',
-  },
-  {
-    id: 2,
-    title: 'Freshman Year',
-    description: 'Your first year memories',
-    isAvailable: false,
-    countdown: '2d 4h',
-  },
-  {
-    id: 3,
-    title: 'Time Capsule 2022',
-    description: 'A look back at 2022',
-    isAvailable: true,
-    countdown: '',
-  },
-  {
-    id: 4,
-    title: 'High School Friends',
-    description: 'Photos and letters',
-    isAvailable: false,
-    countdown: '6h',
-  },
-  {
-    id: 1,
-    title: 'Graduation',
-    description: 'Your graduation day photos',
-    isAvailable: true,
-    countdown: '',
-  },
-  {
-    id: 2,
-    title: 'Freshman Year',
-    description: 'Your first year memories',
-    isAvailable: false,
-    countdown: '2d 4h',
-  },
-  {
-    id: 3,
-    title: 'Time Capsule 2022',
-    description: 'A look back at 2022',
-    isAvailable: true,
-    countdown: '',
-  },
-  {
-    id: 4,
-    title: 'High School Friends',
-    description: 'Photos and letters',
-    isAvailable: false,
-    countdown: '6h',
-  },
-  {
-    id: 1,
-    title: 'Graduation',
-    description: 'Your graduation day photos',
-    isAvailable: true,
-    countdown: '',
-  },
-  {
-    id: 2,
-    title: 'Freshman Year',
-    description: 'Your first year memories',
-    isAvailable: false,
-    countdown: '2d 4h',
-  },
-  {
-    id: 3,
-    title: 'Time Capsule 2022',
-    description: 'A look back at 2022',
-    isAvailable: true,
-    countdown: '',
-  },
-  {
-    id: 4,
-    title: 'High School Friends',
-    description: 'Photos and letters',
-    isAvailable: false,
-    countdown: '6h',
-  },
-  {
-    id: 1,
-    title: 'Graduation',
-    description: 'Your graduation day photos',
-    isAvailable: true,
-    countdown: '',
-  },
-  {
-    id: 2,
-    title: 'Freshman Year',
-    description: 'Your first year memories',
-    isAvailable: false,
-    countdown: '2d 4h',
-  },
-  {
-    id: 3,
-    title: 'Time Capsule 2022',
-    description: 'A look back at 2022',
-    isAvailable: true,
-    countdown: '',
-  },
-  {
-    id: 4,
-    title: 'High School Friends',
-    description: 'Photos and letters',
-    isAvailable: false,
-    countdown: '6h',
-  },
-]
+const route = useRoute()
+const searchTerm = (route.params.term as string) || ''
+const allPosts = ref<capsulePost[]>([])
+
+onMounted(async () => {
+  const { data, error } = await supabase
+    .from<'CapsuleData', capsuleDataPull>('CapsuleData')
+    .select()
+
+  if (data && !error) {
+    data.forEach((item) => {
+      const unlockDate = new Date(item.Unlock)
+      unlockDate.setHours(0, 0, 0, 0)
+      const now = new Date()
+      const timeLeft = unlockDate.getTime() - now.getTime()
+      const isAvailable = timeLeft <= 0 || !item.Private
+
+      const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24))
+      const hours = Math.floor((timeLeft / (1000 * 60 * 60)) % 24)
+      let countdownDisplay = ''
+      if (!isAvailable) {
+        countdownDisplay = `${days}D, ${hours} Hrs`
+      }
+
+      const month = unlockDate.getMonth() + 1
+      const day = unlockDate.getDate()
+      const year = unlockDate.getFullYear()
+
+      allPosts.value.push({
+        id: item.CapsuleID,
+        UsersID: item.UsersID,
+        title: item.Header,
+        description: `Unlocks on ${month}/${day}/${year}`,
+        isAvailable,
+        timeLeftInMs: timeLeft,
+        countdownDisplay,
+        imagePath: item.ImageUrl,
+      })
+    })
+  }
+})
+
+const filteredPosts = computed(() =>
+  allPosts.value.filter((p) => p.title.toLowerCase().includes(searchTerm.toLowerCase())),
+)
+
+const opened = computed(() =>
+  filteredPosts.value.filter((p) => p.isAvailable && p.timeLeftInMs <= 0),
+)
+
+const openingSoon = computed(() =>
+  filteredPosts.value.filter(
+    (p) => p.isAvailable && p.timeLeftInMs > 0 && p.timeLeftInMs <= 3 * 24 * 60 * 60 * 1000,
+  ),
+)
+
+const notOpeningForAWhile = computed(() =>
+  filteredPosts.value.filter((p) => p.isAvailable && p.timeLeftInMs > 3 * 24 * 60 * 60 * 1000),
+)
+
+const privateForever = computed(() =>
+  filteredPosts.value.filter((p) => !p.isAvailable && p.UsersID !== userStore.user.userID),
+)
 </script>

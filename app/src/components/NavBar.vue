@@ -5,6 +5,7 @@
 
       <input
         type="text"
+        v-if="userStore.user.loggedIn"
         @keyup.enter="router.push('/search/' + searchQuery)"
         v-model="searchQuery"
         placeholder="Search capsules..."
@@ -20,8 +21,9 @@
         </RouterLink>
 
         <RouterLink
-          to="/profile"
-          class="relative group rounded-full p-2 hover:bg-gray-200 transition"
+          v-if="profileData"
+          :to="`/profile/${profileData.Username}/${userStore.user.userID}`"
+          class="relative group rounded-full p-2 hover:bg-gray-200 transition flex items-center"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -31,6 +33,9 @@
           >
             <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm-7 8a7 7 0 0114 0H3z" />
           </svg>
+          <span class="ml-2 hidden sm:inline font-medium text-purple-700">
+            {{ profileData.Username }}
+          </span>
         </RouterLink>
 
         <button
@@ -44,30 +49,39 @@
   </header>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { useRouter, RouterLink } from 'vue-router'
 import { useUserStore } from '../stores/uservalue'
-import { useRouter } from 'vue-router'
 import { supabase } from '../lib/supabaseClient'
 
-export default defineComponent({
-  setup() {
-    const router = useRouter()
-    const userStore = useUserStore()
-    const searchQuery = ref('')
-    const signOut = async () => {
-      const { error } = await supabase.auth.signOut()
-      if (!error) {
-        userStore.clearUser()
-        router.push('/login')
-      }
+const router = useRouter()
+const userStore = useUserStore()
+const searchQuery = ref('')
+
+const profileData = ref<{ Username?: string } | null>(null)
+
+const signOut = async () => {
+  const { error } = await supabase.auth.signOut()
+  if (!error) {
+    userStore.clearUser()
+    router.push('/login')
+  }
+}
+
+onMounted(async () => {
+  if (userStore.user.loggedIn) {
+    const userId = userStore.user.userID
+    const { data, error } = await supabase
+      .from('Users')
+      .select('Username')
+      .eq('id', userId)
+      .single()
+    if (!error) {
+      profileData.value = data
+    } else {
+      console.error('Error fetching username:', error)
     }
-    return {
-      router,
-      searchQuery,
-      userStore,
-      signOut,
-    }
-  },
+  }
 })
 </script>
