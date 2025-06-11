@@ -45,6 +45,12 @@ const router = createRouter({
       name: 'ViewPost',
       component: () => import('@/views/ViewPost.vue'),
       meta: {requiresAuth: true},
+    },
+    {
+      path: '/postsgraph',
+      name: 'PostsGraph',
+      component: () => import('@/views/PostTimeline.vue'),
+      meta: {requiresAuth: true},
     }
   ],
 })

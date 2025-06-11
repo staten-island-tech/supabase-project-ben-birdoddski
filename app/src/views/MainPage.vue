@@ -31,6 +31,7 @@
       >
         Explore Time Capsules
       </h2>
+      <RouterLink to="/postsgraph" class="">Testing</RouterLink>
       <div class="space-y-6 sm:space-y-10 max-w-full sm:max-w-5xl mx-auto">
         <section class="bg-white/90 rounded-2xl shadow-xl p-3 sm:p-6">
           <h1
