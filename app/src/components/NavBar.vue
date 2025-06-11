@@ -80,7 +80,7 @@ onMounted(async () => {
     if (!error) {
       profileData.value = data
     } else {
-      console.error('Error fetching username:', error)
+      console.log('Error fetching username:', error)
     }
   }
 })
