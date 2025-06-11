@@ -12,6 +12,7 @@
           </label>
           <br />
           <input
+            @keyup.enter="signInWithUser"
             v-model="userStore.user.email"
             type="text"
             placeholder="Email"
@@ -24,6 +25,7 @@
             <span class="font-bold">Password</span>
           </label>
           <input
+            @keyup.enter="signInWithUser"
             v-model="userStore.user.password"
             type="password"
             placeholder="Password"

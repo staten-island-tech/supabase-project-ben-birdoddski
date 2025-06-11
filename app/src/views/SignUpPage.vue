@@ -72,6 +72,8 @@ import { supabase } from '../lib/supabaseClient'
 import { useUserStore } from '../stores/uservalue'
 import navBar from '../components/navBar.vue'
 
+import router from '@/router'
+
 const userStore = useUserStore()
 const showError = ref<string>()
 async function signUpWithUser() {
@@ -96,6 +98,7 @@ async function signUpWithUser() {
     if (insertError) {
       showError.value = insertError.message
     }
+    router.push('/')
   }
 }
 </script>

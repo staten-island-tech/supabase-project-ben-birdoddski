@@ -74,6 +74,17 @@
             </div>
             <div v-if="!ownsProfile" class="mt-5">
               <button
+                v-if="
+                  Array.isArray(profileData?.Followers) &&
+                  profileData.Followers.includes(userStore.user.userID)
+                "
+                @click="unfollowUser"
+                class="btn btn-outline btn-danger mr-2"
+              >
+                Unfollow
+              </button>
+              <button
+                v-else
                 @click="followUser"
                 class="btn btn-primary"
                 :disabled="followStatus === 'Followed!'"
@@ -127,7 +138,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from '../lib/supabaseClient'
 import { useUserStore } from '../stores/uservalue'
-import navBar from '../components/navBar.vue'
+import NavBar from '../components/NavBar.vue'
 import type { UserProfile, capsulePost } from '../Types/Interfaces'
 
 const route = useRoute()
@@ -191,6 +202,7 @@ onMounted(async () => {
         timeLeftInMs: timeLeft,
         imagePath,
         countdownDisplay,
+        display: true,
       }
     })
   }
@@ -224,16 +236,56 @@ async function followUser() {
     .eq('id', userStore.user.userID)
     .single()
   if (userError || !currentUser) return
-  if (currentUser.Following?.includes(profileId)) return
-  const updatedFollowing = [...(currentUser.Following || []), profileId]
-  const updatedFollowers = [...(profileData.value.Followers || []), userStore.user.userID]
+  if (Array.isArray(currentUser.Following) && currentUser.Following.includes(profileId)) return
+  const updatedFollowing = Array.from(new Set([...(currentUser.Following || []), profileId]))
+
+  const { data: profileUser, error: profileError } = await supabase
+    .from('Users')
+    .select('Followers')
+    .eq('id', profileId)
+    .single()
+  if (profileError || !profileUser) return
+  const updatedFollowers = Array.from(
+    new Set([...(profileUser.Followers || []), userStore.user.userID]),
+  )
+
   await supabase
     .from('Users')
     .update({ Following: updatedFollowing })
     .eq('id', userStore.user.userID)
   await supabase.from('Users').update({ Followers: updatedFollowers }).eq('id', profileId)
   followStatus.value = 'Followed!'
-  profileData.value.Followers = updatedFollowers
+  if (profileData.value) profileData.value.Followers = updatedFollowers
+}
+
+async function unfollowUser() {
+  if (!profileData.value) return
+  const { data: currentUser, error: userError } = await supabase
+    .from('Users')
+    .select('Following')
+    .eq('id', userStore.user.userID)
+    .single()
+  if (userError || !currentUser) return
+  if (!Array.isArray(currentUser.Following) || !currentUser.Following.includes(profileId)) return
+  const updatedFollowing = currentUser.Following.filter((id: string) => id !== profileId)
+
+  const { data: profileUser, error: profileError } = await supabase
+    .from('Users')
+    .select('Followers')
+    .eq('id', profileId)
+    .single()
+  if (profileError || !profileUser) return
+  const updatedFollowers = (profileUser.Followers || []).filter(
+    (id: string) => id !== userStore.user.userID,
+  )
+
+  await supabase
+    .from('Users')
+    .update({ Following: updatedFollowing })
+    .eq('id', userStore.user.userID)
+  await supabase.from('Users').update({ Followers: updatedFollowers }).eq('id', profileId)
+  followStatus.value = ''
+  if (profileData.value) profileData.value.Followers = updatedFollowers
 }
 
 function makeCountdown(timeLeftInMs: number | undefined) {
