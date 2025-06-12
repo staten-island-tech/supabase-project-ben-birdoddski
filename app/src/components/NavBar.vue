@@ -1,36 +1,41 @@
 <template>
   <header class="bg-white shadow sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-0 py-4 flex items-center justify-between">
-      <RouterLink to="/" class="text-2xl font-bold text-purple-600">Time Capsule</RouterLink>
-
-      <input
-        type="text"
+    <div
+      class="max-w-7xl mx-auto px-2 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
+    >
+      <div class="flex flex-col items-start w-full sm:w-auto">
+        <RouterLink to="/" class="text-2xl font-bold text-purple-600 mb-2 sm:mb-0"
+          >Time Capsule</RouterLink
+        >
+        <input
+          type="text"
+          v-if="userStore.user.loggedIn"
+          @keyup.enter="searchQuery && searchQuery.trim() && router.push('/search/' + searchQuery)"
+          v-model="searchStore.searchQuery"
+          placeholder="Search capsules..."
+          class="w-full sm:w-80 px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-400"
+        />
+      </div>
+      <div
         v-if="userStore.user.loggedIn"
-        @keyup.enter="searchQuery && searchQuery.trim() && router.push('/search/' + searchQuery)"
-        v-model="searchStore.searchQuery"
-        placeholder="Search capsules..."
-        class="w-1/2 px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-400"
-      />
-
-      <div v-if="userStore.user.loggedIn" class="ml-4 flex items-center space-x-4">
+        class="flex flex-row flex-nowrap gap-3 items-center justify-end w-full sm:w-auto mt-2 sm:mt-0"
+      >
         <RouterLink
           to="/CreatePost"
-          class="bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-full font-medium transition"
+          class="bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-full font-medium transition min-w-[120px] text-center"
         >
           Create Post
         </RouterLink>
-
         <RouterLink
           to="/postsgraph"
-          class="bg-purple-600 hover:bg-purple-500 text-white py-2 px-4 rounded-full font-medium transition"
+          class="bg-purple-600 hover:bg-purple-500 text-white py-2 px-4 rounded-full font-medium transition min-w-[120px] text-center"
         >
           Unlock Graph
         </RouterLink>
-
         <RouterLink
           v-if="profileData"
           :to="`/profile/${profileData.Username}/${userStore.user.userID}`"
-          class="relative group rounded-full p-2 hover:bg-gray-200 transition flex items-center"
+          class="relative group rounded-full p-2 hover:bg-gray-200 transition flex items-center min-w-[48px] justify-center"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -44,10 +49,9 @@
             {{ profileData.Username }}
           </span>
         </RouterLink>
-
         <button
           @click="signOut"
-          class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-full font-medium transition"
+          class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-full font-medium transition min-w-[120px] text-center"
         >
           Logout
         </button>

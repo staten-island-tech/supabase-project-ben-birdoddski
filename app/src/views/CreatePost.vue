@@ -3,7 +3,7 @@
     <navBar />
     <div v-if="userStore.user.loggedIn" class="relative px-4 py-10 bg-gray-100 flex justify-center">
       <div class="card bg-white w-full max-w-2xl shadow-xl p-6 rounded-2xl space-y-4">
-        <h1 class="text-xl font-semibold">Header:</h1>
+        <h1 class="text-xl font-semibold text-black">Header:</h1>
         <input
           v-model="Header"
           type="text"
@@ -11,25 +11,25 @@
           class="input input-bordered w-full"
         />
 
-        <h1 class="text-xl font-semibold">Text:</h1>
+        <h1 class="text-xl font-semibold text-black">Text:</h1>
         <input
           v-model="BodyText"
           type="text"
           placeholder="Text"
           class="input input-bordered w-full"
         />
-        <fieldset class="fieldset bg-base-100 border-base-300 rounded-box w-64 border p-4">
-          <legend class="fieldset-legend">Post Options</legend>
-          <label class="label space-x-2 items-center font-bold">
-            <input v-model="visible" type="checkbox" class="toggle" />
+        <fieldset class="fieldset bg-gray-100 border-gray-300 rounded-box w-64 border p-4">
+          <legend class="fieldset-legend text-black">Post Options</legend>
+          <label class="label space-x-2 items-center font-bold text-black">
+            <input v-model="visible" type="checkbox" class="toggle text-gray-700" />
             <span>Set to Private</span>
           </label>
         </fieldset>
         <div>
-          <h1 class="text-xl font-semibold">Unlock Date:</h1>
+          <h1 class="text-xl font-semibold text-black">Unlock Date:</h1>
           <input v-model="viewDate" type="date" class="input input-bordered w-full" />
         </div>
-        <h1 class="text-xl font-semibold">Optional:</h1>
+        <h1 class="text-xl font-semibold text-black">Optional:</h1>
         <input
           type="file"
           ref="fileInput"

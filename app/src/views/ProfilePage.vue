@@ -27,8 +27,54 @@
 
             <div class="mt-3 flex space-x-8 text-sm text-gray-700 font-medium">
               <div>{{ userPosts.length }} capsules</div>
-              <div>{{ profileData?.Followers?.length || 0 }} followers</div>
-              <div>{{ profileData?.Following?.length || 0 }} following</div>
+              <button @click="showFollowers = true" class="hover:underline focus:outline-none">
+                {{ profileData?.Followers?.length || 0 }} followers
+              </button>
+              <button @click="showFollowing = true" class="hover:underline focus:outline-none">
+                {{ profileData?.Following?.length || 0 }} following
+              </button>
+            </div>
+            <div
+              v-if="showFollowers"
+              class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+            >
+              <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative">
+                <h2 class="text-xl font-bold mb-4 text-purple-700">Followers</h2>
+                <ul class="max-h-60 overflow-y-auto">
+                  <li v-if="!profileData?.Followers?.length" class="text-gray-500 italic">
+                    No followers yet.
+                  </li>
+                  <li v-for="user in followersList" :key="user.id" class="mb-2">
+                    <RouterLink
+                      :to="`/profile/${user.Username || 'unknown'}/${user.id}`"
+                      class="text-purple-600 hover:underline"
+                      >{{ user.Username || user.id }}</RouterLink
+                    >
+                  </li>
+                </ul>
+                <button @click="showFollowers = false" class="mt-4 btn btn-ghost">Close</button>
+              </div>
+            </div>
+            <div
+              v-if="showFollowing"
+              class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+            >
+              <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative">
+                <h2 class="text-xl font-bold mb-4 text-purple-700">Following</h2>
+                <ul class="max-h-60 overflow-y-auto">
+                  <li v-if="!profileData?.Following?.length" class="text-gray-500 italic">
+                    Not following anyone yet.
+                  </li>
+                  <li v-for="user in followingList" :key="user.id" class="mb-2">
+                    <RouterLink
+                      :to="`/profile/${user.Username || 'unknown'}/${user.id}`"
+                      class="text-purple-600 hover:underline"
+                      >{{ user.Username || user.id }}</RouterLink
+                    >
+                  </li>
+                </ul>
+                <button @click="showFollowing = false" class="mt-4 btn btn-ghost">Close</button>
+              </div>
             </div>
 
             <div class="mt-6">
@@ -152,6 +198,11 @@ const followStatus = ref('')
 const editedBio = ref('')
 const editingBio = ref(false)
 const savingBio = ref(false)
+const showFollowers = ref(false)
+const showFollowing = ref(false)
+
+const followersList = ref<{ id: string; Username?: string }[]>([])
+const followingList = ref<{ id: string; Username?: string }[]>([])
 
 const ownsProfile = computed(() => profileId === userStore.user.userID)
 const userPosts = computed(() => allPosts.value.filter((post) => post.UsersID === profileId))
@@ -207,6 +258,27 @@ onMounted(async () => {
     })
   }
   loading.value = false
+})
+
+watch(showFollowers, async (val) => {
+  if (val && profileData.value?.Followers?.length) {
+    const { data } = await supabase
+      .from('Users')
+      .select('id, Username')
+      .in('id', profileData.value.Followers)
+    console.log('Followers:', followersList.value)
+    followersList.value = data || []
+  }
+})
+
+watch(showFollowing, async (val) => {
+  if (val && profileData.value?.Following?.length) {
+    const { data } = await supabase
+      .from('Users')
+      .select('id, Username')
+      .in('id', profileData.value.Following)
+    followingList.value = data || []
+  }
 })
 
 async function saveBio() {
