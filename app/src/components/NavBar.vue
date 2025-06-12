@@ -3,10 +3,11 @@
     <div
       class="max-w-7xl mx-auto px-2 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
     >
-      <div class="flex md:flex-row md: gap-4 flex-col items-start w-full sm:w-auto">
-        <RouterLink to="/" class="text-2xl font-bold text-purple-600 mb-2 sm:mb-0"
-          >Time Capsule</RouterLink
-        >
+      <div class="flex flex-col items-start w-full sm:w-auto">
+        <RouterLink to="/" class="flex items-center gap-2 mb-2 sm:mb-0">
+          <img src="/src/assets/logo.svg" alt="Time Capsule Logo" class="h-8 w-8 sm:h-10 sm:w-10" />
+          <span class="text-2xl font-bold text-purple-600">Time Capsule</span>
+        </RouterLink>
         <input
           type="text"
           v-if="userStore.user.loggedIn"

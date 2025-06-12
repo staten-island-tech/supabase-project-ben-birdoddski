@@ -30,7 +30,7 @@ import { supabase } from '../lib/supabaseClient'
 import NavBar from '@/components/NavBar.vue'
 
 const chartContainer = ref<HTMLDivElement | null>(null)
-const selectedInterval = ref('month')
+const selectedInterval = ref<'day' | 'week' | 'month' | 'year'>('month')
 
 onMounted(() => {
   loadAndRender()
@@ -42,7 +42,6 @@ async function loadAndRender() {
     return
   }
 
-  // interval formats
   const formatters = {
     day: d3.timeFormat('%Y-%m-%d'),
     week: d3.timeFormat('%Y-W%U'),
@@ -68,12 +67,11 @@ async function loadAndRender() {
       year = 9999
       date.setFullYear(year)
     }
-    const key = formatLabel(date) //converts date into key
-    counts[key] = (counts[key] || 0) + 1 //adds to count for the specific date
+    const key = formatLabel(date)
+    counts[key] = (counts[key] || 0) + 1
   }
 
   const allData = Object.entries(counts).map(([key, count]) => ({
-    //.entries w/ .map converts into "entries" in the array
     date: parseLabel(key)!,
     count,
   }))
