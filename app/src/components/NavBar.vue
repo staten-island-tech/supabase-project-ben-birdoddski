@@ -3,7 +3,7 @@
     <div
       class="max-w-7xl mx-auto px-2 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
     >
-      <div class="flex flex-col items-start w-full sm:w-auto">
+      <div class="flex md:flex-row md: gap-4 flex-col items-start w-full sm:w-auto">
         <RouterLink to="/" class="text-2xl font-bold text-purple-600 mb-2 sm:mb-0"
           >Time Capsule</RouterLink
         >
@@ -18,7 +18,7 @@
       </div>
       <div
         v-if="userStore.user.loggedIn"
-        class="flex flex-row flex-nowrap gap-3 items-center justify-end w-full sm:w-auto mt-2 sm:mt-0"
+        class="flex flex-row flex-nowrap md:gap-3 items-center justify-end w-full sm:w-auto mt-2 sm:mt-0"
       >
         <RouterLink
           to="/CreatePost"
