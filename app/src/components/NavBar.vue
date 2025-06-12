@@ -14,7 +14,7 @@
           @keyup.enter="searchQuery && searchQuery.trim() && router.push('/search/' + searchQuery)"
           v-model="searchStore.searchQuery"
           placeholder="Search capsules..."
-          class="w-full sm:w-80 px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-400"
+          class="w-full text-gray-600 sm:w-80 px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-400"
         />
       </div>
       <div

@@ -79,7 +79,7 @@
 
             <div class="mt-6">
               <div v-if="ownsProfile">
-                <label class="block text-sm font-bold mb-1">Your Bio:</label>
+                <label class="block text-sm font-bold mb-1 text-gray-600">Your Bio:</label>
 
                 <div v-if="!editingBio" class="whitespace-pre-wrap text-gray-700 min-h-[4rem]">
                   {{ profileData?.Bio || 'You have not set a bio yet.' }}
@@ -90,7 +90,7 @@
                   v-model="editedBio"
                   rows="4"
                   placeholder="Write something about yourself..."
-                  class="w-full p-3 border rounded-lg resize-none focus:outline-purple-500"
+                  class="w-full p-3 border rounded-lg resize-none focus:outline-purple-500 text-gray-600"
                 ></textarea>
 
                 <button
