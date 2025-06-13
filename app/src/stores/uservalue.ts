@@ -33,9 +33,7 @@ export const useUserStore = defineStore(
 
         if (!error && data) {
           user.value.username = data.Username || ''
-          if (router.currentRoute.value.path === '/login') {
-            router.push('/')
-          }
+          router.push('/')
         }
       } else {
         clearUser()
